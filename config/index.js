@@ -45,6 +45,7 @@ const config = {
   h5: {
     publicPath: '/',
     staticDirectory: 'static',
+    esnextModules: ['taro-ui-vue'],
     postcss: {
       autoprefixer: {
         enable: true,

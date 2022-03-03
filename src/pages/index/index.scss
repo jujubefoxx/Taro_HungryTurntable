@@ -1,0 +1,267 @@
+/* 样式参考自https://www.cnblogs.com/wenruo/p/9732704.html*/
+.random-button {
+  padding: 20Px;
+
+  button {
+    font-size: 14Px;
+    margin: 10Px;
+  }
+
+  .button-primary {
+    color: #409EFF;
+    background: #ecf5ff;
+    border-color: #b3d8ff;
+  }
+
+  .button-warn {
+    color: #F56C6C;
+    background: #fef0f0;
+    border-color: #fbc4c4;
+  }
+}
+
+.button-primary {
+  color: #409EFF;
+  background: #ecf5ff;
+  border-color: #b3d8ff;
+}
+
+.wrapper {
+  position: relative;
+  height: 200Px;
+  width: 200Px;
+  padding: 20Px;
+  background-color: #ff5555;
+  box-shadow: #000000 0 0 5Px;
+  border-radius: 50%;
+  margin: 20Px auto;
+
+}
+
+.light {
+  position: absolute;
+  height: 10Px;
+  width: 10Px;
+  border-radius: 50%;
+  top: 5Px;
+  left: 115Px;
+  transform-origin: 5Px 115Px;
+}
+
+.light-twinkling {
+  animation: 1s twinkling 3, 100ms 3s twinkling 3;
+}
+
+.light:nth-child(2n) {
+  background-color: #fafce7;
+}
+
+.light:nth-child(2n+1) {
+  background-color: #ffe58b;
+}
+
+.light:nth-child(2) {
+  transform: rotate(36deg);
+}
+
+.light:nth-child(3) {
+  transform: rotate(72deg);
+}
+
+.light:nth-child(4) {
+  transform: rotate(108deg);
+}
+
+.light:nth-child(5) {
+  transform: rotate(144deg);
+}
+
+.light:nth-child(6) {
+  transform: rotate(180deg);
+}
+
+.light:nth-child(7) {
+  transform: rotate(216deg);
+}
+
+.light:nth-child(8) {
+  transform: rotate(252deg);
+}
+
+.light:nth-child(9) {
+  transform: rotate(288deg);
+}
+
+.light:nth-child(10) {
+  transform: rotate(324deg);
+}
+
+.panel {
+  position: relative;
+  height: 200Px;
+  width: 200Px;
+  background-color: #b7b7b7;
+  border-radius: 100Px;
+}
+
+.sector {
+  position: absolute;
+  left: 100Px;
+  top: 0;
+  width: 100Px;
+  height: 200Px;
+  font-size: 14Px;
+  border-radius: 0 100Px 100Px 0;
+  overflow: hidden;
+  transform-origin: left center;
+}
+
+.sector:nth-child(1) {
+  transform: rotate(-18deg);
+}
+
+.sector:nth-child(2) {
+  transform: rotate(18deg);
+}
+
+.sector:nth-child(3) {
+  transform: rotate(54deg);
+}
+
+.sector:nth-child(4) {
+  transform: rotate(90deg);
+}
+
+.sector:nth-child(5) {
+  transform: rotate(126deg);
+}
+
+.sector:nth-child(6) {
+  transform: rotate(162deg);
+}
+
+.sector:nth-child(7) {
+  transform: rotate(198deg);
+}
+
+.sector:nth-child(8) {
+  transform: rotate(234deg);
+}
+
+.sector:nth-child(9) {
+  transform: rotate(270deg);
+}
+
+.sector:nth-child(10) {
+  transform: rotate(306deg);
+}
+
+.sector:nth-child(2n+1) .sector-inner {
+  background: #fef6e0;
+}
+
+.sector:nth-child(2n) .sector-inner {
+  background: #ffffff;
+}
+
+.sector-inner {
+  text-align: center;
+  display: block;
+  width: 40Px;
+  padding: 5Px 3Px 0 57Px;
+  height: 195Px;
+  transform: translateX(-100Px) rotate(36deg);
+  transform-origin: right center;
+  border-radius: 100Px 0 0 100Px;
+}
+
+.sector-inner text {
+  display: block;
+  transform-origin: center;
+  transform: rotate(-19deg);
+  color: #d46854;
+}
+
+.pointer-trans {
+  transition: transform 3s cubic-bezier(.2, .93, .43, 1);
+}
+
+.pointer {
+  position: absolute;
+  left: 79Px;
+  top: 79Px;
+  z-index: 10;
+  height: 30Px;
+  width: 30Px;
+  padding: 6Px;
+  color: #fff899;
+  line-height: 15Px;
+  font-size: 12Px;
+  text-align: center;
+  background-color: #ff5350;
+  border-radius: 50%;
+  border: 1Px solid #ff5350;
+
+}
+
+.pointer::after {
+  content: '';
+  position: absolute;
+  left: 14Px;
+  top: -24Px;
+  border-width: 12Px 6Px;
+  border-style: solid;
+  border-color: transparent;
+  border-bottom-color: #ff5350;
+  transform-origin: center;
+}
+
+.button {
+  cursor: pointer;
+  padding: 5Px;
+  margin: 20Px auto;
+  max-width: 100Px;
+  background-color: #d46854;
+  color: #fff;
+  text-align: center;
+  border-radius: 4Px;
+}
+
+.result {
+  height: 50Px;
+  line-height: 50Px;
+  text-align: center;
+  /*margin: 20Px 60Px;*/
+  margin: 0 auto;
+
+}
+
+.content-title {
+  font-weight: 600;
+  margin-bottom: 10Px;
+}
+
+.popBox-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.popBox-list__text {
+  text-align: left;
+  width: 250px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.random-button {
+  margin-bottom: 10px;
+}
+
+@keyframes twinkling {
+  50% {
+    background: transparent;
+  }
+}
