@@ -13,7 +13,7 @@
           class="sector"
         >
           <view class="sector-inner">
-            <text>{{ food }}</text>
+            <text>{{ food.length > 7 ? `${food.slice(0, 5)}...` : food }}</text>
           </view>
         </view>
         <view
@@ -32,7 +32,7 @@
       <AtButton
         v-for="(typeText,index) in typeList"
         :key="index"
-        :type="activeType===index?'primary':'secondary'"
+        :type="activeType===typeText.alias?'primary':'secondary'"
         size="small"
         circle
         :on-click="(e) =>changeType(index,typeText.alias)"
@@ -49,18 +49,24 @@
         随机当前配置
       </button>
       <button
-        class="button-primary"
-        :plain="true"
+        class="button--primary"
         @tap="handleEditRandomList"
       >
         自定义随机列表
       </button>
       <button
-        class="button-warn"
+        class="button--success"
         :plain="true"
         @tap="showEdit = true"
       >
         自定义当前配置
+      </button>
+      <button
+        class="button--warn"
+        :plain="false"
+        @tap="handleClear"
+      >
+        重置随机列表
       </button>
     </view>
     <AtModal
@@ -148,11 +154,11 @@ export default {
   },
   data() {
     return {
-      imgUrl:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202005%2F17%2F20200517215354_mrxgp.thumb.400_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648975866&t=0200ed81628758dd8d46609998cfb3fe',
+      imgUrl: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202005%2F17%2F20200517215354_mrxgp.thumb.400_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648975866&t=0200ed81628758dd8d46609998cfb3fe',
       dialogVisible: false,
       resetState: false,
       foodList: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],//食物列表
-      activeType: 0,
+      activeType: 'all',
       typeList: [
         {title: '啥都想吃', alias: 'all'},
         {title: '想喝点啥', alias: 'drink'},
@@ -182,17 +188,53 @@ export default {
     }
   },
   created() {
+    const list = Taro.getStorageSync('typeRandomList');
+    if (list) {
+      let _this = this
+      Taro.setStorage({
+        key: "initialRandomList",
+        data: _this.typeRandomList,
+        success() {
+          console.log(list)
+          _this.typeRandomList = list;
+        }
+      })
+    }
+
     this.changeType(0, 'all');
+
   },
   methods: {
+    //清空缓存
+    handleClear() {
+      const _this = this;
+      Taro.showModal({
+        title: '提示',
+        content: '重置配置会将你自定义的菜单全部恢复为初始数据，是否确认重置？',
+        success(res) {
+          if (res.confirm) {
+            Taro.clearStorageSync() //清空缓存
+            const list = Taro.getStorageSync('initialRandomList'); //获取初始值
+            if (list) {
+              _this.typeRandomList = list;//赋值
+              this.handleRandom();//随机转盘数据
+            }
+            Taro.showToast({title: '重置成功', icon: 'none'})
+          }
+        }
+      })
+
+
+    },
     //改变类型
     changeType(index, alias) {
-      if (this.onRotation) return;
-      this.activeType = index;
+      if (this.onRotation || this.activeType === alias) return;
+      this.activeType = alias;
       this.randomList = this.typeRandomList[alias];
       if (this.nextStatus.deg) {
         this.resetPointer();
       }
+      this.randomList = this.typeRandomList[this.activeType];//当前转盘数据
       this.handleRandom();
     },
     //复原指针
@@ -220,13 +262,14 @@ export default {
     saveRandomList() {
       this.dialogVisible = false;
       this.randomList = this.randomListText.split(' ')
+      this.typeRandomList[this.activeType] = this.randomList;
 
       Taro.setStorage({
-        key: "randomList",
-        data: this.randomList,
+        key: "typeRandomList",
+        data: this.typeRandomList,
         success() {
           Taro.getStorage({
-            key: "key",
+            key: "typeRandomList",
             success(res) {
               console.log(res.data)
             }
@@ -350,20 +393,20 @@ export default {
       })
     }
   },
-  onAddToFavorites (res) {
+  onAddToFavorites(res) {
     return {
       title: '今天吃啥',
-      imageUrl:this.imgUrl
+      imageUrl: this.imgUrl
     }
   },
-  onShareAppMessage (res) {
+  onShareAppMessage(res) {
     if (res.from === 'button') {
       // 来自页面内转发按钮
       console.log(res.target)
     }
     return {
       title: '快来看看今天吃啥',
-      imageUrl:this.imgUrl
+      imageUrl: this.imgUrl
     }
   }
 }

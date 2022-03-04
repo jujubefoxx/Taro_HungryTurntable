@@ -7,16 +7,24 @@
     margin: 10Px;
   }
 
-  .button-primary {
-    color: #409EFF;
-    background: #ecf5ff;
-    border-color: #b3d8ff;
-  }
+  .button {
+    &--primary {
+      color: #409eff;
+      background: #ecf5ff;
+      border-color: #b3d8ff;
+    }
 
-  .button-warn {
-    color: #F56C6C;
-    background: #fef0f0;
-    border-color: #fbc4c4;
+    &--success {
+      color: #67c23a;
+      background: #f0f9eb;
+      border-color: #c2e7b0;
+    }
+
+    &--warn {
+      color: #F56C6C;
+      background: #fef0f0;
+      border-color: #fbc4c4;
+    }
   }
 }
 
@@ -267,12 +275,14 @@
 .type-list {
   display: flex;
   justify-content: center;
-  padding:0 20Px;
+  padding: 0 20Px;
   flex-wrap: wrap;
-  button{
+
+  button {
     display: flex;
     align-items: center;
   }
+
   .at-button--small {
     height: auto;
     font-size: 12Px;
