@@ -106,7 +106,8 @@
       </AtModalAction>
     </AtModal>
     <AtModal
-      :is-opened="dialogVisible"
+      v-if="dialogVisible"
+      :is-opened="true"
       :on-close="endEdit"
     >
       <AtModalHeader>随机配置</AtModalHeader>
@@ -117,7 +118,7 @@
           :count="false"
           height="400"
           :max-length="900"
-          placeholder=""
+          placeholder="请输入内容"
         />
         <text style="font-size: 12Px;text-align: left">
           请使用空格对食物进行分隔，如：“牛肉 鸡排 汉堡 烧烤 沙拉”
