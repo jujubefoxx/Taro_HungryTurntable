@@ -28,6 +28,18 @@
     <view class="result">
       {{ result }}
     </view>
+    <view class="type-list">
+      <AtButton
+        v-for="(typeText,index) in typeList"
+        :key="index"
+        :type="activeType===index?'primary':'secondary'"
+        size="small"
+        circle
+        :on-click="(e) =>changeType(index,typeText.alias)"
+      >
+        {{ typeText.title }}
+      </AtButton>
+    </view>
     <view class="random-button">
       <button
         class="btn-max-w"
@@ -101,11 +113,11 @@
       <AtModalContent>
         <AtTextarea
           :value="randomListText"
-          :onChange="handleChange"
+          :on-change="handleChange"
           :count="false"
           height="400"
           :max-length="900"
-          placeholder="请输入内容"
+          placeholder=""
         />
         <text style="font-size: 12Px;text-align: left">
           请使用空格对食物进行分隔，如：“牛肉 鸡排 汉堡 烧烤 沙拉”
@@ -127,16 +139,39 @@
 import './index.scss'
 import Vue from 'vue'
 import Taro from '@tarojs/taro';
-import {AtModal, AtModalAction, AtModalContent, AtModalHeader, AtTextarea} from 'taro-ui-vue'
+import {AtModal, AtModalAction, AtModalContent, AtModalHeader, AtTextarea, AtButton} from 'taro-ui-vue'
 
 export default {
   components: {
-    AtModal, AtModalHeader, AtModalContent, AtModalAction, AtTextarea
+    AtModal, AtModalHeader, AtModalContent, AtModalAction, AtTextarea, AtButton
   },
   data() {
     return {
+      imgUrl:'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202005%2F17%2F20200517215354_mrxgp.thumb.400_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648975866&t=0200ed81628758dd8d46609998cfb3fe',
       dialogVisible: false,
+      resetState: false,
       foodList: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],//食物列表
+      activeType: 0,
+      typeList: [
+        {title: '啥都想吃', alias: 'all'},
+        {title: '想喝点啥', alias: 'drink'},
+        {title: '减肥吃啥', alias: 'fit'},
+        {title: '聚餐吃啥', alias: 'friend'},
+        {title: '吃点甜的', alias: 'sweet'},
+        {title: '赶时间呢', alias: 'quick'},
+        {title: '自己煮饭', alias: 'self'},
+        {title: '来点零食', alias: 'snacks'}
+      ],
+      typeRandomList: {
+        all: ['北京烤鸭', '泰餐', '寿司', '烧鸡', '盖浇饭', '砂锅', '大排档', '米线', '满汉全席', '西餐', '麻辣烫', '关东煮', '自助餐', '炒面', '快餐', '水果', '西北风', '馄饨', '火锅', '烧烤', '泡面', '速冻水饺', '日本料理', '涮羊肉', '拉面', '肯德基', '面包', '扬州炒饭', '酸菜鱼', '茶餐厅', '海底捞', '咖啡', '比萨', '麦当劳', '兰州拉面', '沙县小吃', '烤鱼', '海鲜', '铁板烧', '韩国料理', '粥', '快餐', '东南亚菜', '甜点', '农家菜', '川菜', '粤菜', '湘菜', '本帮菜', '竹笋烤肉'],
+        drink: ['杨枝甘露', '珍珠奶茶', '芝士草莓', '草莓甘露', '多肉葡萄', '海盐奶茶', '布丁奶茶', '烤奶', '西瓜汁', '糖水', '蛋糕奶茶', '抹茶牛奶', '乌龙奶茶', '大咖鸳鸯', '芋圆红茶拿铁', '鲜芋茶拿铁', '可可鲜奶', '黑糖珍珠牛奶', '一桶水果茶', '百香果双响炮', '冰淇淋红茶', '阿华田', '纯牛奶', '矿泉水', '元气森林', '茶', '茉莉花茶'],
+        fit: ['西兰花炒虾仁', '菠菜炒鸡胸肉', '排骨海带汤', '尖椒肉丝', '酸辣圆白菜', '手撕包菜', '香煎三文鱼', '木耳炒芹菜', '黄油煎牛排', '卤鸡腿肉', '凉拌海带', '水煮菠菜', '炒牛肉', '炒青瓜', '西红柿蛋汤', '玉米', '清蒸鱼', '煎鸡胸肉', '水煮西兰花', '紫薯', '炒生菜', '轻食沙拉', '西兰花炒牛肉', '全麦土司', '无糖西红柿炒蛋', '去皮鸡腿', '番茄巴沙鱼', '鸡蛋羹'],
+        friend: ['泰餐', '寿司', '烧鸡', '砂锅', '大排档', '猪肚鸡', '满汉全席', '西餐', '鸡公煲', '自助餐', '日本料理', '拉面', '东北菜', '涮羊肉', '酸菜鱼', '肯德基', '麦当劳', '海底捞', '牛肉火锅', '披萨', '茶餐厅', '烤鱼', '烤肉', '烧烤', '海鲜', '铁板烧', '韩国料理', '农家菜', '烤乳鸽', '窑鸡', '川菜', '粤菜', '湘菜'],
+        sweet: ['绿豆沙', '豆乳盒子', '黑森林蛋糕', '提拉米苏', '半熟芝士', '蛋糕卷', '爆米花', '马卡龙', '绿豆糕', '水果蛋糕', '紫薯牛奶', '麻薯', '钵仔糕', '蛋挞', '曲奇饼', '可颂', '炸牛奶', '奶油面包', '菠萝包', '蛋黄酥', '麦芬', '戚风蛋糕', '小熊饼干', '糖水', '雪梅娘', '泡芙', '乳酪蛋糕', '舒芙蕾', '纸杯蛋糕'],
+        quick: ['烧鹅饭', '烧鸭饭', '炒米粉', '盖浇饭', '蒸饺', '泡面', '酸菜鱼', '食堂', '鸡腿饭', '猪耳朵饭', '拉面', '炒面', '炒河粉', '关东煮', '炒饭', '鱼香肉丝饭', '酸辣土豆丝饭', '青椒炒肉饭', '肠粉', '排骨米饭', '麻辣烫', '冒菜', '煎饺', '煎饼', '包子', '牛肉面', '杂酱面'],
+        self: ['西兰花炒虾仁', '蒜蓉金针菇', '鱼香肉丝', '尖椒肉丝', '红烧牛肉土豆', '手撕包菜', '上汤娃娃菜', '肉末嫩豆腐', '酿豆腐', '可乐鸡翅', '葱油鸡', '黄焖鸡', '烧腐竹', '鱼香茄子', '糖醋排骨', '油焖大虾', '照烧鸡腿', '日本豆腐', '酸辣土豆丝', '炖牛腩', '虾仁滑蛋', '蒜蓉虾', '咕噜肉', '手撕鸡', '酸汤肥牛', '香辣炒花甲', '辣子鸡'],
+        snacks: ['薯片', '蟹柳', '巧克力', '饼干', '脆骨肠', '蛋黄酥', '辣条', '水果干', '冰淇淋', '糖果', '果冻', 'qq糖', '牛肉脯', '开心果', '牛肉干', '葡萄干', '淀粉肠', '黑椒肠'],
+      },
       onRotation: false, // 记录当前是否正在旋转，如果正在旋转，就不能继续点击了
       result: '点击中间按钮看看今天吃啥',//结果文案
       nextStatus: {},//转盘的下一个状态
@@ -146,9 +181,28 @@ export default {
     }
   },
   created() {
-    this.handleRandom();
+    this.changeType(0, 'all');
   },
   methods: {
+    //改变类型
+    changeType(index, alias) {
+      if (this.onRotation) return;
+      this.activeType = index;
+      this.randomList = this.typeRandomList[alias];
+      if (this.nextStatus.deg) {
+        this.resetPointer();
+      }
+      this.handleRandom();
+    },
+    //复原指针
+    resetPointer() {
+      this.nextStatus = {};
+      let getEle = document.getElementsByClassName.bind(document);
+      let pointer = getEle('pointer')[0]; //获取指针元素
+      pointer.style.transform = `rotateZ(0deg)`; //旋转+动画
+      this.result = '点击中间按钮看看今天吃啥';//结果文案
+    },
+    //改变随机列表
     handleChange(value) {
       this.randomListText = value;
     },
@@ -165,6 +219,19 @@ export default {
     saveRandomList() {
       this.dialogVisible = false;
       this.randomList = this.randomListText.split(' ')
+
+      Taro.setStorage({
+        key: "randomList",
+        data: this.randomList,
+        success() {
+          Taro.getStorage({
+            key: "key",
+            success(res) {
+              console.log(res.data)
+            }
+          })
+        }
+      })
     },
     //手动随机食物配置
     handleRandom() {
@@ -175,10 +242,10 @@ export default {
         const index = this.randomNumBoth(0, newArr.length)
         let result = newArr[index];
         //当随机列表的数不够的情况下随机选取已有的食物
-        if(result){
+        if (result) {
           newArr.splice(index, 1) //去重
-        }else{
-          result=foodList[this.randomNumBoth(0, foodList.length)]
+        } else {
+          result = foodList[this.randomNumBoth(0, foodList.length)]
         }
         return result
       });//修改为新的随机列表
@@ -280,29 +347,22 @@ export default {
           Taro.showToast({title: '取消修改', icon: 'none'})
         }
       })
-      // this.$prompt(`请输入需要替换${this.foodList[index]}的食物`, '提示', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      // }).then(({value}) => {
-      //   this.$message({
-      //     type: 'success',
-      //     message: '已修改为: ' + value
-      //   });
-      //   const isResult = this.foodList[index] === this.nextStatus.food;//修改的食物是否为当前结果的食物
-      //   Vue.set(this.foodList, index, value) //更新新的值
-      //   if (!this.nextStatus.deg || !isResult) return;//修改结果中的食物
-      //   //获取结果位置的食物
-      //   this.nextStatus.food = value;
-      //   this.result = `就决定是你了！${this.nextStatus.food}`;
-      // }).catch(() => {
-      //   this.$message({
-      //     type: 'info',
-      //     message: '取消修改'
-      //   });
-      // });
-      // if (value) {
-      //     Vue.set(this.foodList, index, value) //更新新的值
-      // }
+    }
+  },
+  onAddToFavorites (res) {
+    return {
+      title: '今天吃啥',
+      imageUrl:this.imgUrl
+    }
+  },
+  onShareAppMessage (res) {
+    if (res.from === 'button') {
+      // 来自页面内转发按钮
+      console.log(res.target)
+    }
+    return {
+      title: '快来看看今天吃啥',
+      imageUrl:this.imgUrl
     }
   }
 }

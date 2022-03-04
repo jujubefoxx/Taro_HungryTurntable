@@ -264,6 +264,22 @@
   font-size: 14Px;
 }
 
+.type-list {
+  display: flex;
+  justify-content: center;
+  padding:0 20Px;
+  flex-wrap: wrap;
+  button{
+    display: flex;
+    align-items: center;
+  }
+  .at-button--small {
+    height: auto;
+    font-size: 12Px;
+    margin: 5Px;
+  }
+}
+
 @keyframes twinkling {
   50% {
     background: transparent;
