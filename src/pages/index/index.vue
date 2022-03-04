@@ -39,6 +39,7 @@
       <button
         class="button-primary"
         :plain="true"
+        @tap="handleEditRandomList"
       >
         自定义随机列表
       </button>
@@ -50,25 +51,74 @@
         自定义当前配置
       </button>
     </view>
-    <AtModal :isOpened="showEdit" :onClose="endEdit">
+    <AtModal
+      :is-opened="showEdit"
+      :on-close="endEdit"
+    >
       <AtModalHeader>当前配置</AtModalHeader>
       <AtModalContent>
         <view class="content">
           <view>
             <view>
-              <view class="popBox-list" v-for="(food,index) in foodList">
-                <text class="popBox-list__text"> {{ food }}</text>
-                <button size="mini"  @tap="handleRandomOne(index)">随机</button>
-                <button size="mini" class="button-primary" plain @tap="handleEdit(index)">修改</button>
+              <view
+                v-for="(food,index) in foodList"
+                :key="index"
+                class="popBox-list"
+              >
+                <text class="popBox-list__text">
+                  {{ food }}
+                </text>
+                <button
+                  size="mini"
+                  @tap="handleRandomOne(index)"
+                >
+                  随机
+                </button>
+                <button
+                  size="mini"
+                  class="button-primary"
+                  @tap="handleEdit(index)"
+                >
+                  修改
+                </button>
               </view>
             </view>
           </view>
         </view>
       </AtModalContent>
-<!--      <AtModalAction>-->
-<!--        <button>取消</button>-->
-<!--        <button>确定</button>-->
-<!--      </AtModalAction>-->
+      <AtModalAction>
+        <!--              <button>取消</button>-->
+        <button @tap="endEdit">
+          关闭
+        </button>
+      </AtModalAction>
+    </AtModal>
+    <AtModal
+      :is-opened="dialogVisible"
+      :on-close="endEdit"
+    >
+      <AtModalHeader>随机配置</AtModalHeader>
+      <AtModalContent>
+        <AtTextarea
+          :value="randomListText"
+          :onChange="handleChange"
+          :count="false"
+          height="400"
+          :max-length="900"
+          placeholder="请输入内容"
+        />
+        <text style="font-size: 12Px;text-align: left">
+          请使用空格对食物进行分隔，如：“牛肉 鸡排 汉堡 烧烤 沙拉”
+        </text>
+      </AtModalContent>
+      <AtModalAction>
+        <button @tap="dialogVisible = false">
+          取消
+        </button>
+        <button @tap="saveRandomList">
+          确认
+        </button>
+      </AtModalAction>
     </AtModal>
   </view>
 </template>
@@ -76,9 +126,13 @@
 <script>
 import './index.scss'
 import Vue from 'vue'
-import {AtModal, AtModalHeader, AtModalContent, AtModalAction} from 'taro-ui-vue'
+import Taro from '@tarojs/taro';
+import {AtModal, AtModalAction, AtModalContent, AtModalHeader, AtTextarea} from 'taro-ui-vue'
 
 export default {
+  components: {
+    AtModal, AtModalHeader, AtModalContent, AtModalAction, AtTextarea
+  },
   data() {
     return {
       dialogVisible: false,
@@ -92,12 +146,12 @@ export default {
     }
   },
   created() {
-    this.handleEditRandomList();
-  },
-  components: {
-    AtModal, AtModalHeader, AtModalContent, AtModalAction
+    this.handleRandom();
   },
   methods: {
+    handleChange(value) {
+      this.randomListText = value;
+    },
     //关闭编辑窗口
     endEdit() {
       this.showEdit = false
@@ -115,13 +169,20 @@ export default {
     //手动随机食物配置
     handleRandom() {
       const {randomList, foodList} = this;
+
       let newArr = JSON.parse(JSON.stringify(randomList)) //深拷贝
       this.foodList = foodList.map((item) => {
         const index = this.randomNumBoth(0, newArr.length)
-        const result = newArr[index];
-        newArr.splice(index, 1) //去重
+        let result = newArr[index];
+        //当随机列表的数不够的情况下随机选取已有的食物
+        if(result){
+          newArr.splice(index, 1) //去重
+        }else{
+          result=foodList[this.randomNumBoth(0, foodList.length)]
+        }
         return result
       });//修改为新的随机列表
+
       if (!this.nextStatus.deg) return;//修改结果中的食物
       let currentDeg = this.nextStatus.deg; //如果当前已有角度则获取角度 无则为0
       //获取结果位置的食物
@@ -133,13 +194,13 @@ export default {
       const {randomList, foodList} = this;
       const number = this.randomNumBoth(0, randomList.length);
       const isResult = this.foodList[index] === this.nextStatus.food;//修改的食物是否为当前结果的食物
-      this.foodList[index]=randomList[number]
+      this.foodList[index] = randomList[number]
+
       Vue.set(this.foodList, index, randomList[number]) //更新新的值
-      // this.$message({
-      //   type: 'success',
-      //   message: '已随机为: ' + randomList[number]
-      // });
+      Taro.showToast({title: `已随机为：${randomList[number]}`, icon: 'none'})
+
       if (!this.nextStatus.deg || !isResult) return;//修改结果中的食物
+
       //获取结果位置的食物
       this.nextStatus.food = randomList[number];
       this.result = `就决定是你了！${this.nextStatus.food}`;
@@ -149,10 +210,8 @@ export default {
       const Range = Max - Min;
 
       const Rand = Math.random();
-
-      const num = Min + Math.floor(Rand * Range); //舍去
-
-      return num;
+      //舍去
+      return Min + Math.floor(Rand * Range);
     },
     afterTransitionend() {
       const {nextStatus} = this;
@@ -193,26 +252,54 @@ export default {
       this.getReward();//获取结果
     },
     handleEdit(index) {
-      this.$prompt(`请输入需要替换${this.foodList[index]}的食物`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-      }).then(({value}) => {
-        this.$message({
-          type: 'success',
-          message: '已修改为: ' + value
-        });
-        const isResult = this.foodList[index] === this.nextStatus.food;//修改的食物是否为当前结果的食物
-        Vue.set(this.foodList, index, value) //更新新的值
-        if (!this.nextStatus.deg || !isResult) return;//修改结果中的食物
-        //获取结果位置的食物
-        this.nextStatus.food = value;
-        this.result = `就决定是你了！${this.nextStatus.food}`;
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '取消修改'
-        });
-      });
+      const {foodList, nextStatus} = this;
+      const _this = this;
+      Taro.showModal({
+        editable: true,
+        title: '提示',
+        placeholderText: `请输入需要替换${this.foodList[index]}的食物`,
+        success(res) {
+          const {content, confirm, cancel} = res;
+          if (confirm) {
+            if (content) {
+              Taro.showToast({title: `已修改为：${content}`, icon: 'none'})
+              const isResult = foodList[index] === nextStatus.food;//修改的食物是否为当前结果的食物
+              Vue.set(foodList, index, content) //更新新的值
+              if (!nextStatus.deg || !isResult) return;//修改结果中的食物
+              //获取结果位置的食物
+              nextStatus.food = content;
+              _this.result = `就决定是你了！${nextStatus.food}`;
+            } else {
+              Taro.showToast({title: '内容不能为空', icon: 'none'})
+            }
+          } else if (cancel) {
+            Taro.showToast({title: '取消修改', icon: 'none'})
+          }
+        },
+        fail() {
+          Taro.showToast({title: '取消修改', icon: 'none'})
+        }
+      })
+      // this.$prompt(`请输入需要替换${this.foodList[index]}的食物`, '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      // }).then(({value}) => {
+      //   this.$message({
+      //     type: 'success',
+      //     message: '已修改为: ' + value
+      //   });
+      //   const isResult = this.foodList[index] === this.nextStatus.food;//修改的食物是否为当前结果的食物
+      //   Vue.set(this.foodList, index, value) //更新新的值
+      //   if (!this.nextStatus.deg || !isResult) return;//修改结果中的食物
+      //   //获取结果位置的食物
+      //   this.nextStatus.food = value;
+      //   this.result = `就决定是你了！${this.nextStatus.food}`;
+      // }).catch(() => {
+      //   this.$message({
+      //     type: 'info',
+      //     message: '取消修改'
+      //   });
+      // });
       // if (value) {
       //     Vue.set(this.foodList, index, value) //更新新的值
       // }
