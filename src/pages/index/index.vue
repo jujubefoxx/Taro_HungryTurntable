@@ -190,19 +190,12 @@ export default {
   created() {
     const list = Taro.getStorageSync('typeRandomList');
     if (list) {
-      let _this = this
-      Taro.setStorage({
-        key: "initialRandomList",
-        data: _this.typeRandomList,
-        success() {
-          console.log(list)
-          _this.typeRandomList = list;
-        }
-      })
+      let {typeRandomList} = this
+      Taro.setStorageSync('initialRandomList', typeRandomList)
+      typeRandomList = list;
+      this.randomList = list['all']
     }
-
-    this.changeType(0, 'all');
-
+    this.handleRandom();
   },
   methods: {
     //清空缓存
@@ -212,12 +205,16 @@ export default {
         title: '提示',
         content: '重置配置会将你自定义的菜单全部恢复为初始数据，是否确认重置？',
         success(res) {
+          console.log(res)
+
           if (res.confirm) {
-            Taro.clearStorageSync() //清空缓存
             const list = Taro.getStorageSync('initialRandomList'); //获取初始值
+            console.log(list)
             if (list) {
               _this.typeRandomList = list;//赋值
-              this.handleRandom();//随机转盘数据
+              _this.handleRandom();//随机转盘数据
+              _this.randomList = _this.typeRandomList[_this.activeType];//当前转盘数据
+              Taro.clearStorageSync() //清空缓存
             }
             Taro.showToast({title: '重置成功', icon: 'none'})
           }
