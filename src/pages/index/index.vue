@@ -69,7 +69,7 @@
         :plain="true"
         @tap="showEdit = true"
       >
-        <view class="at-icon at-icon-settings"/>
+        <view class="at-icon at-icon-settings" />
         编辑当前配置
       </button>
       <button
@@ -159,6 +159,7 @@ import './index.scss'
 import Vue from 'vue'
 import Taro from '@tarojs/taro';
 import {AtModal, AtModalAction, AtModalContent, AtModalHeader, AtTextarea, AtButton, AtIcon} from 'taro-ui-vue'
+import TabBar from "../../components/TabBar/TabBar";
 
 export default {
   components: {
