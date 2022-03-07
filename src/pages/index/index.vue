@@ -40,32 +40,44 @@
         {{ typeText.title }}
       </AtButton>
     </view>
+    <view class="menu-list">
+      <navigator class="menu-list__text"
+                 url="/pages/menu/index"
+      >
+        菜谱大全
+      </navigator>
+      <!--      <text class="menu-list__text">菜谱大全</text>-->
+    </view>
     <view class="random-button">
       <button
         class="btn-max-w"
         :plain="true"
         @tap="handleRandom"
       >
+        <view class="at-icon at-icon-shuffle-play"/>
         随机当前配置
       </button>
       <button
         class="button--primary"
         @tap="handleEditRandomList"
       >
-        自定义随机列表
+        <view class="at-icon at-icon-edit"/>
+        编辑随机列表
       </button>
       <button
         class="button--success"
         :plain="true"
         @tap="showEdit = true"
       >
-        自定义当前配置
+        <view class="at-icon at-icon-settings"/>
+        编辑当前配置
       </button>
       <button
         class="button--warn"
         :plain="false"
         @tap="handleClear"
       >
+        <view class="at-icon at-icon-reload"/>
         重置随机列表
       </button>
     </view>
@@ -146,11 +158,11 @@
 import './index.scss'
 import Vue from 'vue'
 import Taro from '@tarojs/taro';
-import {AtModal, AtModalAction, AtModalContent, AtModalHeader, AtTextarea, AtButton} from 'taro-ui-vue'
+import {AtModal, AtModalAction, AtModalContent, AtModalHeader, AtTextarea, AtButton, AtIcon} from 'taro-ui-vue'
 
 export default {
   components: {
-    AtModal, AtModalHeader, AtModalContent, AtModalAction, AtTextarea, AtButton
+    AtModal, AtModalHeader, AtModalContent, AtModalAction, AtTextarea, AtButton, AtIcon
   },
   data() {
     return {

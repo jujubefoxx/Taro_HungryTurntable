@@ -1,10 +1,17 @@
 /* 样式参考自https://www.cnblogs.com/wenruo/p/9732704.html*/
 .random-button {
-  padding: 20Px;
+  padding: 10Px;
 
   button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 14Px;
     margin: 10Px;
+
+    .at-icon {
+      margin-right: 4Px;
+    }
   }
 
   .button {
@@ -28,11 +35,18 @@
   }
 }
 
-.button-primary {
-  color: #409EFF;
-  background: #ecf5ff;
-  border-color: #b3d8ff;
+.menu-list {
+  text-align: center;
+  font-size: 14Px;
+  margin-top: 10Px;
+  color: #409eff;
+
+  &__text{
+    display: inline-block;
+    border-bottom: 1px solid #409eff;
+  }
 }
+
 
 .wrapper {
   position: relative;
@@ -262,10 +276,6 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-.random-button {
-  margin-bottom: 10px;
 }
 
 .at-textarea__textarea {
