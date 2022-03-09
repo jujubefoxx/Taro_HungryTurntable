@@ -14,7 +14,7 @@
       "list": [
         {
           "name": "",
-          "pathName": "pages/menu/index",
+          "pathName": "pages/menu/menuList",
           "query": "",
           "scene": null
         },

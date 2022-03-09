@@ -222,7 +222,6 @@ export default {
 
           if (res.confirm) {
             const list = Taro.getStorageSync('initialRandomList'); //获取初始值
-            console.log(list)
             if (list) {
               _this.typeRandomList = list;//赋值
               _this.handleRandom();//随机转盘数据

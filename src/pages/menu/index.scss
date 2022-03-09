@@ -1,64 +1,89 @@
-.at-grid__flex .at-grid-item--rect .content-inner__text {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14Px;
-  width: 80Px;
-  height: 80Px;
-  background: rgba(0, 0, 0, .05);
-  margin: 0;
-  border-radius: 8Px;
-}
-
-.at-grid__flex {
-  margin: 5Px;
-}
-
-.at-accordion__content {
-
-  &:after {
-    display: none;
-  }
-}
-
-
-.menu-page {
-  display: flex;
-
-  .submenu-list {
-    flex: 1;
-  }
-
-  .at-accordion__header {
-    height: 46Px;
+.menu-container {
+  .at-grid__flex .at-grid-item--rect .content-inner__text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 14Px;
+    width: 80Px;
+    height: 80Px;
+    background: rgba(0, 0, 0, .05);
+    margin: 0;
+    border-radius: 8Px;
   }
+
+  .at-grid__flex {
+    margin: 5Px;
+  }
+
+  .at-accordion__content {
+
+    &:after {
+      display: none;
+    }
+  }
+
+
+  .menu-page {
+    display: flex;
+
+    .submenu-list {
+      flex: 1;
+    }
+
+    .at-accordion__header {
+      height: 46Px;
+      font-size: 14Px;
+    }
+  }
+
+  .at-list {
+    height: 100vh;
+    border-right: 2px solid rgba(0, 0, 0, .05);
+    width: 110Px;
+  }
+
+  .type-list {
+    font-size: 14Px;
+    height: 46Px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .at-list__item-content {
+      margin-right: 0;
+    }
+
+    &--active {
+      color: #409eff;
+      border-right: 2Px solid #409eff;
+    }
+  }
+
 }
 
-.at-list {
-  height: 100vh;
-  border-right: 2px solid rgba(0, 0, 0, .05);
-  width: 110Px;
-}
-
-.type-list {
+.menu-list-container {
   font-size: 14Px;
-  height: 46Px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
 
-  &:first-child {
-    margin-top: 0;
+  .example-item {
+    display: flex;
+    padding: 12Px;
+    line-height: 1.5;
+    color: #9B9B9B;
+    border-top: 1Px solid rgba(214, 228, 239, .3);
+    border-bottom: 1Px solid rgba(214, 228, 239, .3);
+
+    picker {
+      flex: 1
+    }
   }
 
-  .at-list__item-content {
-    margin-right: 0;
-  }
-
-  &--active {
-    color: #409eff;
-    border-right: 2Px solid #409eff;
+  .at-list__item, .item-extra__info {
+    font-size: 14Px;
   }
 }
