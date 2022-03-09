@@ -90,20 +90,22 @@ export default {
     }
   },
   created() {
-    let {menuList, multiSelector} = this;
+    let {menuList} = this;
     menuList = Taro.getStorageSync('menuList');
-    multiSelector = [menuList.firstMenu[0], menuList.secondMenu[0][0], menuList.finalMenu[0][0][0]]
+    this.multiSelector = [menuList.firstMenu, menuList.secondMenu[0], menuList.finalMenu[0][0]]
+    this.menuList = menuList
   },
   methods: {
     handleMulitChange(value, column) {
       value = parseInt(value);
       column = parseInt(column)
       const {mulitSelectorValues, multiSelector, menuList} = this;
-      const {finalMenu,secondMenu}=menuList
+      const {finalMenu, secondMenu} = menuList
       let Index = [...mulitSelectorValues]
       if (column === 0) {
-        // Vue.set(multiSelector, 1, secondMenu[value]) //更新新的值
-        // Vue.set(multiSelector, 2, ['全部']) //更新新的值
+        // console.log(menuList.secondMenu, secondMenu, menuList, this.menuList, this)
+        Vue.set(multiSelector, 1, secondMenu[value]) //更新新的值
+        Vue.set(multiSelector, 2, ['全部']) //更新新的值
         Index = [value, 0, 0]
       } else if (column === 1) {
         // if (value === 0) {
