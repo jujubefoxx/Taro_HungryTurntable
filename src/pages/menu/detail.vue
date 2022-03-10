@@ -51,11 +51,11 @@
 
 <script>
 import './index.scss'
-import {AtList, AtListItem, AtCard} from 'taro-ui-vue'
+import {AtList, AtListItem, AtCard,AtDivider } from 'taro-ui-vue'
 
 export default {
   name: "MenuDetail",
-  components: {AtList, AtListItem, AtCard},
+  components: {AtList, AtListItem, AtCard,AtDivider},
   data() {
     return {
       dataItem: {

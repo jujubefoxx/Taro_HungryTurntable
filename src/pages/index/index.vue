@@ -178,7 +178,7 @@ export default {
         {title: '减肥吃啥', alias: 'fit'},
         {title: '聚餐吃啥', alias: 'friend'},
         {title: '吃点甜的', alias: 'sweet'},
-        {title: '赶时间呢', alias: 'quick'},
+        {title: '外卖快餐', alias: 'quick'},
         {title: '自己煮饭', alias: 'self'},
         {title: '来点零食', alias: 'snacks'}
       ],
