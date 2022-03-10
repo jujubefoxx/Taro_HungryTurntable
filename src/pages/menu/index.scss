@@ -82,8 +82,27 @@
       flex: 1
     }
   }
+}
+
+.menu-detail {
+  .at-article__h1, .at-article__info {
+    text-align: center;
+  }
+
+  .at-list__item {
+    padding: 6Px;
+  }
+
+  .at-list {
+    margin-top: 20px;
+  }
 
   .at-list__item, .item-extra__info {
     font-size: 14Px;
+  }
+
+  .at-card {
+    margin-top: 10Px;
+    margin-bottom: 30Px;
   }
 }

@@ -10,17 +10,13 @@
       </text>
     </view>
     <view class="desc-container">
-      <view class="desc">
-        <view class="view">
-          {{ view }}
-        </view>
-      </view>
+      {{ desc }}
     </view>
     <view class="cover-box">
       <image
         class="cover"
         mode="aspectFill"
-        :src="cover[0]"
+        :src="cover"
         :alt="title"
       />
     </view>
@@ -43,14 +39,14 @@ export default {
       default: () => ''
     },
     cover: {
-      type: Array,
-      default: () => ([])
+      type: String,
+      default: () => ('')
     },
     seed: {
       type: String,
       default: () => ''
     },
-    view: {
+    desc: {
       type: [Number, String],
       default: 0
     },
@@ -72,54 +68,54 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 110px;
+  justify-content: center;
+  height: 110Px;
   background-color: #fff;
-  padding: 12px 0 12px 125px;
-  border-bottom: 1px solid #f6f6f4;
+  padding: 12Px 0 12Px 125Px;
+  border-bottom: 1Px solid #f6f6f4;
   box-sizing: border-box;
 
   .cover-box {
     position: absolute;
-    top: 12px;
+    top: 12Px;
     left: 0;
 
     .cover {
-      width: 114px;
-      height: 86px;
-      border-radius: 4px;
+      width: 114Px;
+      height: 86Px;
+      border-radius: 4Px;
     }
   }
 
   .title {
-    position: relative;
-    display: -webkit-box;
-    line-height: 20px;
-    font-size: 16px;
-    text-align: justify;
+    //display: flex;
+    //align-items: center;
+    line-height: 20Px;
+    font-size: 16Px;
+    text-align: left;
+    height: 40Px;
     color: #303030;
-    overflow: hidden;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+
+    .title-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
   }
 
   .desc-container {
-    line-height: 17px;
-    font-size: 12px;
+    //margin-top: 10Px;
+    text-align: left;
+    line-height: 17Px;
+    font-size: 12Px;
     color: #bfbfbf;
-
-    .top {
-      line-height: 17px;
-      color: #ff5757;
-      margin-right: 8px;
-    }
-
-    .view-icon {
-      width: 15px;
-      height: 15px;
-      margin-bottom: -3px;
-      opacity: .5;
-    }
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 }
 </style>

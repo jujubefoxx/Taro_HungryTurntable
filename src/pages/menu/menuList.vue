@@ -100,16 +100,115 @@ export default {
       current: 0,
       value: '',
       menuList: [],
-      tabList: [
-        {title: '菜谱类型'},
-        {title: '菜谱类型'},
-        {title: '菜谱类型'}
-      ],
-      subType: [[{title: '子菜单', open: false, list: [{value: '菜单'}, {value: '菜单'}, {value: '菜单'}]}], [{
-        title: '子菜单',
-        open: false,
-        list: [{value: '菜单'}, {value: '菜单'}, {value: '菜单'}]
-      }]]
+      showapi_res_body: {
+        "allNum": 2, "allPage": 1, "datas": [{
+          "cpName": "麻辣烫",
+          "ct": "2020-07-19 22:56:02.217",
+          "des": "新鲜食材准备好换个烧法。",
+          "id": "5f145f02bf79d8701009ab28",
+          "largeImg": "http://i2.chuimg.com/8abc5ef8235d419f961a3c8b6cafe701_3285w_2628h.jpg?imageView2/2/w/660/interlace/1/q/90",
+          "smallImg": "http://i2.chuimg.com/8abc5ef8235d419f961a3c8b6cafe701_3285w_2628h.jpg?imageView2/1/w/215/h/136/interlace/1/q/90",
+          "steps": [{
+            "content": "1.黑木耳泡发好，洗净所有食材。2.鸡腿切肉片、牛肉切片，撒盐放淀粉腌制。",
+            "imgUrl": "http://i2.chuimg.com/8dd84ff1e22e485ba9e631f617971890_4032w_3024h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 1
+          }, {
+            "content": "3.锅底：干锅下猪肉煎出油，下鸡腿骨翻炒，再下番茄（去皮切丁）翻炒，加入黑木耳、豆腐丝、开水盖锅盖煮成汤（多烧一会）",
+            "imgUrl": "http://i2.chuimg.com/64540b1572e8494aa59c6fc478478d7b_4019w_3014h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 2
+          }, {
+            "content": "4.先放鸡肉、猪肉、花菜煮开，再放剩余食材。",
+            "imgUrl": "http://i2.chuimg.com/012c19aa93b141798441d9fb186d21b7_3024w_3024h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 3
+          }, {
+            "content": "5.青菜、金针菇可以最后放。",
+            "imgUrl": "http://i2.chuimg.com/8d231b1c8a56400e97fd9e9068eb71df_3024w_3024h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 4
+          }, {
+            "content": "6.撒点香菜开吃。",
+            "imgUrl": "http://i2.chuimg.com/d7805caabbd94accbbc405c74270b492_4032w_3024h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 5
+          }, {
+            "content": "来个渲染—效果图",
+            "imgUrl": "http://i2.chuimg.com/7ad21ee4742e4ac2905b499a2c5b70cc_3450w_2760h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 6
+          }, {
+            "content": "某餐馆的麻辣烫—香菇锅底。",
+            "imgUrl": "http://i2.chuimg.com/a5a1505af20d443c8f1c8f793ee370ed_4032w_3024h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 7
+          }, {
+            "content": "番茄锅底。",
+            "imgUrl": "http://i2.chuimg.com/b8a91fcb538a46279d54766bd03f30a4_4032w_3024h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 8
+          }],
+          "tip": "1.食材的量还可以减少一点，三个人吃不完。2.鸡蛋打开可以事先和肉类一起下汤里直接煮。",
+          "type": "肉类 鸡 鸡腿",
+          "type_v1": "肉类",
+          "type_v2": "鸡",
+          "type_v3": "鸡腿",
+          "yl": [{"ylName": "牛肉", "ylUnit": "少量"}, {"ylName": "猪肉", "ylUnit": "少量"}, {
+            "ylName": "鸡腿",
+            "ylUnit": "1只"
+          }, {"ylName": "鸡蛋", "ylUnit": "2个"}, {"ylName": "土豆", "ylUnit": "2个"}, {
+            "ylName": "番茄",
+            "ylUnit": "2个"
+          }, {"ylName": "花菜", "ylUnit": "小半个"}, {"ylName": "青菜", "ylUnit": "1小把"}, {
+            "ylName": "香菜",
+            "ylUnit": "5-6颗"
+          }, {"ylName": "金针菇", "ylUnit": "1把"}, {"ylName": "豆腐皮", "ylUnit": "1张"}, {
+            "ylName": "豆腐丝",
+            "ylUnit": "少量"
+          }, {"ylName": "粉丝", "ylUnit": "少量"}, {"ylName": "面饼", "ylUnit": "1个"}, {
+            "ylName": "盐",
+            "ylUnit": "少量"
+          }, {"ylName": "淀粉", "ylUnit": "1小勺"}]
+        }, {
+          "cpName": "【地狱麻辣烫】",
+          "ct": "2019-01-09 22:30:29.151",
+          "des": "一口大锅咕嘟咕嘟永远冒着热气，一台冰柜以格子为区间整齐的放着各种食材，肉丸可以按个论，蔬菜也被分成小捆的样子，喜欢什么就拿，恨不得每一样都加上。",
+          "id": "5c360585e9b6cc5dcac88551",
+          "largeImg": "http://i2.chuimg.com/e09cffac5add11e7947d0242ac110002_1611w_1076h.jpg?imageView2/2/w/660/interlace/1/q/90",
+          "smallImg": "http://i2.chuimg.com/e09cffac5add11e7947d0242ac110002_1611w_1076h.jpg?imageView2/1/w/215/h/136/interlace/1/q/90",
+          "steps": [{
+            "content": "老母鸡、猪皮冷水锅焯水，捞出再次放入清水锅，加京葱、姜片，料酒，转小火慢炖2-3小时，捞出猪皮和鸡弃之，高汤完成。",
+            "imgUrl": "http://i2.chuimg.com/b641ac525ade11e7bc9d0242ac110002_1052w_702h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 1
+          }, {
+            "content": "油锅爆香姜蒜末，放入八角2个，香叶3个，白寇4个，草果2颗，桂皮2片、适量郫县豆瓣酱、花椒和干辣椒，均匀翻炒。",
+            "imgUrl": "http://i2.chuimg.com/9de9f8805ade11e7947d0242ac110002_1052w_702h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 2
+          }, {
+            "content": "将炒好的底料倒入砂锅，加3大勺醪糟，注入高汤，煮沸。",
+            "imgUrl": "http://i2.chuimg.com/a80bff8e5ade11e7947d0242ac110002_1611w_1076h.jpg?imageView2/2/w/300/interlace/1/q/90",
+            "orderNum": 3
+          }, {
+            "content": "转中小火始终保持汤面微开，先放入处理好的荤菜，煮至无明显血色，再放入素菜，所有食材煮熟后即可捞出食用。",
+            "imgUrl": "http://i1.chuimg.com/af0fc5865ade11e7bc9d0242ac110002_1611w_1076h.jpg@2o_50sh_1pr_1l_300w_90q_1wh",
+            "orderNum": 4
+          }],
+          "tip": "",
+          "type": "肉类 鸡 老母鸡",
+          "type_v1": "肉类",
+          "type_v2": "鸡",
+          "type_v3": "老母鸡",
+          "yl": [{"ylName": "牛丸", "ylUnit": "适量"}, {"ylName": "肉片", "ylUnit": "适量"}, {
+            "ylName": "蛋",
+            "ylUnit": "1个"
+          }, {"ylName": "方便面", "ylUnit": "适量"}, {"ylName": "素菜", "ylUnit": "适量"}, {
+            "ylName": "老母鸡",
+            "ylUnit": "适量"
+          }, {"ylName": "猪皮", "ylUnit": "适量"}, {"ylName": "京葱、姜片、料酒", "ylUnit": "适量"}, {
+            "ylName": "香姜蒜末",
+            "ylUnit": "适量"
+          }, {"ylName": "八角", "ylUnit": "2个"}, {"ylName": "香叶", "ylUnit": "3个"}, {
+            "ylName": "白寇",
+            "ylUnit": "4个"
+          }, {"ylName": "草果", "ylUnit": "2颗"}, {"ylName": "桂皮", "ylUnit": "2片"}, {
+            "ylName": "郫县豆瓣酱",
+            "ylUnit": "适量"
+          }, {"ylName": "花椒、干辣椒", "ylUnit": "适量"}, {"ylName": "醪糟", "ylUnit": "3勺"}]
+        }], "flag": true, "maxResult": 10, "msg": "查询成功！", "page": 1, "remark": "查询成功！", "ret_code": "0"
+      }
     }
   },
   computed: {
@@ -131,7 +230,13 @@ export default {
     let {menuList} = this;
     menuList = Taro.getStorageSync('menuList');
     this.multiSelector = [menuList.firstMenu, menuList.secondMenu[0], menuList.finalMenu[0][0]]
-    this.menuList = menuList
+    this.menuList = menuList;
+    this.dataItem.data = this.showapi_res_body.datas.map((item)=>({
+      title:item.cpName,
+      desc:item.des,
+      cover:item.smallImg
+  }))
+    console.log(this.showapi_res_body.datas)
   },
   methods: {
     handleClickNews(key) {
@@ -198,48 +303,6 @@ export default {
     handleClick(value) {
       this.current = value
     },
-    //获取类别
-    getType() {
-      Taro.showLoading({
-        title: '加载中'
-      })
-      const _this = this
-      Taro.request({
-        url: `${this.host}/showapi_cpType`,
-        header: {
-          'Authorization': `APPCODE ${this.appCode}`,
-          // 'content-type': 'application/json' // 默认值
-        },
-        success(res) {
-          const {data} = res;
-          const result = data.showapi_res_body
-          if (parseInt(result.ret_code) === 0) {
-            const tabList = []
-            const subTypeList = []
-            Object.keys(result).forEach((type) => {
-              if (Object.prototype.toString.call(result[type]) === '[object Object]') {
-                tabList.push({title: type})
-                const sub = Object.keys(result[type]).map((title) => {
-                  const list = result[type][title].map(e => ({value: e}))
-                  return {title: title, open: false, list: list}
-                })
-                subTypeList.push(sub)
-              }
-            })
-            _this.tabList = tabList
-            _this.subType = subTypeList
-          } else {
-            Taro.showToast({title: '查询失败', icon: 'none'})
-          }
-          Taro.hideLoading()
-
-          console.log(res.data)
-        },
-        fail() {
-          Taro.hideLoading()
-        }
-      })
-    }
   }
 }
 </script>
