@@ -46,6 +46,22 @@
       :on-change="onChange.bind(this, 'value')"
       :on-action-click="onActionClick"
     />
+    <custom-list
+      :finished="dataItem.finished"
+      :loading="dataItem.loading"
+      @load="fetchData"
+    >
+      <view
+        v-for="(list, key) in dataItem.data"
+        :key="key"
+      >
+        <news-list
+          v-bind="list"
+          :index="key"
+          @choose="handleClickNews(key)"
+        />
+      </view>
+    </custom-list>
   </view>
 </template>
 
@@ -62,6 +78,13 @@ export default {
   },
   data() {
     return {
+      dataItem: {
+        data: [],
+        loading: false,
+        finished: false,
+        error: false,
+        page: 1
+      },
       host: 'https://caipu.market.alicloudapi.com',
       selector: ['口味特色', '海产'],
       selectorValue: 0,
@@ -75,7 +98,7 @@ export default {
       mulitSelectorValues: [0, 0, 0],
       appCode: 'e61c205f09f7484581728061e8b8f2af',
       current: 0,
-      value: '辣',
+      value: '',
       menuList: [],
       tabList: [
         {title: '菜谱类型'},
@@ -89,6 +112,21 @@ export default {
       }]]
     }
   },
+  computed: {
+    finalType() {
+      //选中的类型
+      //1.如果第三个index不为0 则获取第三个的内容
+      //2.递推上去
+      const {multiSelector, mulitSelectorValues} = this;
+      if (parseInt(mulitSelectorValues[2]) !== 0) {
+        return multiSelector[2][mulitSelectorValues[2]]
+      } else if (parseInt(mulitSelectorValues[1]) !== 0) {
+        return multiSelector[1][mulitSelectorValues[1]]
+      } else {
+        return multiSelector[0][mulitSelectorValues[0]]
+      }
+    }
+  },
   created() {
     let {menuList} = this;
     menuList = Taro.getStorageSync('menuList');
@@ -96,30 +134,40 @@ export default {
     this.menuList = menuList
   },
   methods: {
+    handleClickNews(key) {
+      console.log(key)
+    },
+    fetchData() {
+    },
     handleMulitChange(value, column) {
       value = parseInt(value);
       column = parseInt(column)
       const {mulitSelectorValues, multiSelector, menuList} = this;
       const {finalMenu, secondMenu} = menuList
       let Index = [...mulitSelectorValues]
+
+
       if (column === 0) {
+        //选择第一项
         // console.log(menuList.secondMenu, secondMenu, menuList, this.menuList, this)
-        Vue.set(multiSelector, 1, secondMenu[value]) //更新新的值
-        Vue.set(multiSelector, 2, ['全部']) //更新新的值
+        Vue.set(multiSelector, 1, secondMenu[value]) //更新二级菜单的值
+        Vue.set(multiSelector, 2, ['全部']) //更新三级菜单
         Index = [value, 0, 0]
       } else if (column === 1) {
-        // if (value === 0) {
-        //   Vue.set(multiSelector, 2, ['全部']) //更新新的值
-        // } else {
-        //   Vue.set(multiSelector, 2, finalMenu[mulitSelectorValues[0]][value]) //更新新的值
-        // }
-        // Index[1] = value;
-        // Index[2] = 0;
+        //选择第二项
+        if (value === 0) {
+          //选中全部
+          Vue.set(multiSelector, 2, ['全部']) //更新三级菜单
+        } else {
+          Vue.set(multiSelector, 2, finalMenu[mulitSelectorValues[0]][value - 1]) //更新三级菜单
+        }
+        Index[1] = value; //修改位置
+        Index[2] = 0; //修改位置
       } else {
-        Index[2] = value;
+        //选择第三项
+        Index[2] = value;//修改位置
       }
       this.mulitSelectorValues = Index
-
     },
     handleColumnChange(e) {
       console.log(e, '123')

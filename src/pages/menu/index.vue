@@ -36,6 +36,7 @@
 import './index.scss'
 import Taro from '@tarojs/taro';
 import {AtAccordion, AtGrid, AtList, AtListItem} from 'taro-ui-vue'
+import {getMenuType} from "../../apis";
 
 export default {
   name: "Menu",
@@ -84,64 +85,106 @@ export default {
         title: '加载中'
       })
       const _this = this
-      Taro.request({
-        url: `${this.host}/showapi_cpType`,
-        header: {
-          'Authorization': `APPCODE ${this.appCode}`,
-          // 'content-type': 'application/json' // 默认值
-        },
-        success(res) {
-          const {data} = res;
-          const result = data.showapi_res_body
-          if (parseInt(result.ret_code) === 0) {
-            const tabList = [] //左侧菜单
-            const subTypeList = [] //手风琴列表
-            const storage = {firstMenu: [], secondMenu: [], finalMenu: []}//将数据循环存入缓存
+      getMenuType().then((res) => {
+        const result = res.showapi_res_body
+        const tabList = [] //左侧菜单
+        const subTypeList = [] //手风琴列表
+        const storage = {firstMenu: [], secondMenu: [], finalMenu: []}//将数据循环存入缓存
 
-            Object.keys(result).forEach((type) => {
-              //只遍历对象结构的结果
-              if (Object.prototype.toString.call(result[type]) === '[object Object]') {
-                tabList.push({title: type}) //生成左侧菜单
-                storage.firstMenu.push(type) //一级菜单存入仓库
+        Object.keys(result).forEach((type) => {
+          //只遍历对象结构的结果
+          if (Object.prototype.toString.call(result[type]) === '[object Object]') {
+            tabList.push({title: type}) //生成左侧菜单
+            storage.firstMenu.push(type) //一级菜单存入仓库
 
-                //二级菜单存入仓库
-                const second = Object.keys(result[type]).map((title) => (title))
-                second.unshift('全部')
-                storage.secondMenu.push(second)
+            //二级菜单存入仓库
+            const second = Object.keys(result[type]).map((title) => (title))
+            second.unshift('全部')
+            storage.secondMenu.push(second)
 
-                const sub = Object.keys(result[type]).map((title, index) => {
-                  const list = result[type][title].map(e => ({value: e}))//三级菜单的数据
+            const sub = Object.keys(result[type]).map((title, index) => {
+              const list = result[type][title].map(e => ({value: e}))//三级菜单的数据
 
-                  return {title: title, open: false, list: list}
-                })
-                subTypeList.push(sub)//二级菜单列表
-              }
+              return {title: title, open: false, list: list}
             })
-            subTypeList.forEach((item, index) => {
-              storage.finalMenu.push([])
-              storage.finalMenu[index] = item.map((i) => {
-                  const arr = i.list.map(value => (value.value))
-                  arr.unshift('全部')
-                  return arr
-                }
-              )//三级菜单存入仓库
-            })
-            Taro.setStorageSync('menuList', storage)
-            // array[index].push(result[type][title].map(e => (e)))//三级菜单存入仓库
-            console.log(storage)
-            _this.tabList = tabList
-            _this.subType = subTypeList
-          } else {
-            Taro.showToast({title: '查询失败', icon: 'none'})
+            subTypeList.push(sub)//二级菜单列表
           }
-          Taro.hideLoading()
+        })
+        subTypeList.forEach((item, index) => {
+          storage.finalMenu.push([])
+          storage.finalMenu[index] = item.map((i) => {
+              const arr = i.list.map(value => (value.value))
+              arr.unshift('全部')
+              return arr
+            }
+          )//三级菜单存入仓库
+        })
+        Taro.setStorageSync('menuList', storage)
 
-          console.log(res.data)
-        },
-        fail() {
-          Taro.hideLoading()
-        }
+        _this.tabList = tabList
+        _this.subType = subTypeList
+      }).catch((fail) => {
+        Taro.showToast({title: '查询失败', icon: 'none'})
+        Taro.hideLoading();
       })
+      // Taro.request({
+      //   url: `${this.host}/showapi_cpType`,
+      //   header: {
+      //     'Authorization': `APPCODE ${this.appCode}`,
+      //     // 'content-type': 'application/json' // 默认值
+      //   },
+      //   success(res) {
+      //     const {data} = res;
+      //     const result = data.showapi_res_body
+      //     if (parseInt(result.ret_code) === 0) {
+      //       const tabList = [] //左侧菜单
+      //       const subTypeList = [] //手风琴列表
+      //       const storage = {firstMenu: [], secondMenu: [], finalMenu: []}//将数据循环存入缓存
+      //
+      //       Object.keys(result).forEach((type) => {
+      //         //只遍历对象结构的结果
+      //         if (Object.prototype.toString.call(result[type]) === '[object Object]') {
+      //           tabList.push({title: type}) //生成左侧菜单
+      //           storage.firstMenu.push(type) //一级菜单存入仓库
+      //
+      //           //二级菜单存入仓库
+      //           const second = Object.keys(result[type]).map((title) => (title))
+      //           second.unshift('全部')
+      //           storage.secondMenu.push(second)
+      //
+      //           const sub = Object.keys(result[type]).map((title, index) => {
+      //             const list = result[type][title].map(e => ({value: e}))//三级菜单的数据
+      //
+      //             return {title: title, open: false, list: list}
+      //           })
+      //           subTypeList.push(sub)//二级菜单列表
+      //         }
+      //       })
+      //       subTypeList.forEach((item, index) => {
+      //         storage.finalMenu.push([])
+      //         storage.finalMenu[index] = item.map((i) => {
+      //             const arr = i.list.map(value => (value.value))
+      //             arr.unshift('全部')
+      //             return arr
+      //           }
+      //         )//三级菜单存入仓库
+      //       })
+      //       Taro.setStorageSync('menuList', storage)
+      //       // array[index].push(result[type][title].map(e => (e)))//三级菜单存入仓库
+      //       console.log(storage)
+      //       _this.tabList = tabList
+      //       _this.subType = subTypeList
+      //     } else {
+      //       Taro.showToast({title: '查询失败', icon: 'none'})
+      //     }
+      //     Taro.hideLoading()
+      //
+      //     console.log(res.data)
+      //   },
+      //   fail() {
+      //     Taro.hideLoading()
+      //   }
+      // })
     }
   }
 }
