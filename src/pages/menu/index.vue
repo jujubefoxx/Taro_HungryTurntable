@@ -24,7 +24,7 @@
             mode="rect"
             :has-border="false"
             :data="item.list"
-            :onClick="clickList"
+            :on-click="(list,index)=>clickList(list,index,item.title,key)"
           />
         </AtAccordion>
       </view>
@@ -67,8 +67,19 @@ export default {
   },
   methods: {
     //点击九宫格
-    clickList(item) {
-      console.log(item.value)
+    clickList(item, index, title, key) {
+      const {tabList, current} = this
+      const query = {
+        firstMenu: tabList[current].title,
+        firstIndex: current,
+        secondMenu: title,
+        secondIndex: key,
+        finalMenu: item.value,
+        finalIndex: index
+      }
+      // console.log(index, title, tabList[current].title, query)
+
+      Taro.navigateTo({url: `/pages/menu/menuList?query=${JSON.stringify(query)}`})
     },
     //手风琴点击事件
     onClickSubType(val) {

@@ -228,23 +228,29 @@ export default {
     }
   },
   watch: {
-    mulitSelectorValues() {
-      this.reset();
-      this.fetchData();
-    }
+    // mulitSelectorValues() {
+    //   this.reset();
+    //   this.fetchData();
+    // }
   },
   onReachBottom() {
     this.fetchData();
   },
-  created() {
+  onLoad(option) {
     this.reset();
-    let {menuList} = this;
+    let {menuList, mulitSelectorValues} = this;
     menuList = Taro.getStorageSync('menuList');
-    this.multiSelector = [menuList.firstMenu, menuList.secondMenu[0], menuList.finalMenu[0][0]]
     this.menuList = menuList;
+    if (option.query) {
+      const query = JSON.parse(option.query)
+      console.log(query,menuList,menuList.finalMenu)
+      this.multiSelector = [menuList.firstMenu, menuList.secondMenu[query.firstIndex], menuList.finalMenu[query.firstIndex][query.secondIndex]]
+      this.mulitSelectorValues = [query.firstIndex, query.secondIndex + 1, query.finalIndex + 1]
+    } else {
+      this.multiSelector = [menuList.firstMenu, menuList.secondMenu[0], menuList.finalMenu[0][0]]
+    }
     this.fetchData();
   },
-
   methods: {
     reset() {
       this.showapi_res_body = []
@@ -304,6 +310,8 @@ export default {
         Index[2] = value;//修改位置
       }
       this.mulitSelectorValues = Index
+        this.reset();
+        this.fetchData();
     },
     onChange(stateName, value) {
       this[stateName] = value
