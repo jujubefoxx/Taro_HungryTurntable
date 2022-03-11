@@ -45,6 +45,7 @@
               {{ steps.content }}
             </view>
             <image
+              v-if="steps.imgUrl"
               class="at-article__img"
               :src="steps.imgUrl"
               mode="widthFix"
