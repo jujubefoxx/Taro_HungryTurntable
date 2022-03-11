@@ -1,9 +1,8 @@
 <template>
   <view class="menu-detail">
     <image
-      style="width: 100%"
       class="cover"
-      mode="widthFix"
+      mode="aspectFill"
       :src="dataItem.largeImg"
       :alt="dataItem.cpName"
     />
@@ -24,7 +23,12 @@
             :icon="{ size: 25, value: 'list', }"
           >
             <AtList>
-              <AtListItem v-for="(yl,index) in dataItem.yl" :key="index" :title="yl.ylName" :extraText="yl.ylUnit"/>
+              <AtListItem
+                v-for="(yl,index) in dataItem.yl"
+                :key="index"
+                :title="yl.ylName"
+                :extra-text="yl.ylUnit"
+              />
             </AtList>
           </AtCard>
         </view>
@@ -32,7 +36,10 @@
           <view class="at-article__h3">
             步骤
           </view>
-          <view v-for="(steps,index) in dataItem.steps" :key="index">
+          <view
+            v-for="(steps,index) in dataItem.steps"
+            :key="index"
+          >
             <!--            {{ steps.orderNum }}-->
             <view class="at-article__p">
               {{ steps.content }}
@@ -46,16 +53,32 @@
         </view>
       </view>
     </view>
+    <AtDivider>
+      <AtIcon
+        value="heart-2"
+        color="#6190E8"
+      />
+    </AtDivider>
+    <navigator url="/pages/menu/menuList">
+      <AtButton
+        type="secondary"
+        size="small"
+      >
+        更多菜谱
+      </AtButton>
+    </navigator>
+
   </view>
 </template>
 
 <script>
 import './index.scss'
-import {AtList, AtListItem, AtCard,AtDivider } from 'taro-ui-vue'
+import Taro from '@tarojs/taro';
+import {AtList, AtListItem, AtCard, AtDivider, AtIcon, AtButton} from 'taro-ui-vue'
 
 export default {
   name: "MenuDetail",
-  components: {AtList, AtListItem, AtCard,AtDivider},
+  components: {AtList, AtListItem, AtCard, AtDivider, AtIcon, AtButton},
   data() {
     return {
       dataItem: {
@@ -123,12 +146,10 @@ export default {
     }
   },
   created() {
+    Taro.showLoading()
+    this.dataItem = Taro.getStorageSync('MenuDetail')
+    Taro.hideLoading()
   },
   methods: {},
-  onLoad: function (options) {
-    if (!options.dataItem) return
-    this.dataItem = JSON.parse(options.dataItem)
-    console.log(this.dataItem)
-  }
 }
 </script>

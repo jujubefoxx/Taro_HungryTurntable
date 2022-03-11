@@ -70,6 +70,24 @@
   font-size: 14Px;
   text-align: center;
 
+  .list-container {
+    padding: 0 16Px;
+  }
+
+  .at-load-more__tip {
+    font-size: 14Px;
+  }
+
+  .at-button {
+    height: 35Px;
+    font-size: 14Px;
+
+    &__text {
+      font-size: 14Px;
+      line-height: 35Px;
+    }
+  }
+
   .example-item {
     display: flex;
     padding: 12Px;
@@ -85,6 +103,9 @@
 }
 
 .menu-detail {
+  padding-bottom: 20Px;
+
+
   .at-article__h1, .at-article__info {
     text-align: center;
   }
@@ -104,5 +125,14 @@
   .at-card {
     margin-top: 10Px;
     margin-bottom: 30Px;
+  }
+
+  .at-divider__line {
+    background: transparent;
+  }
+
+  .cover {
+    width: 100%;
+    max-height: 300Px;
   }
 }

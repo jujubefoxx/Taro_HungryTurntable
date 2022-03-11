@@ -26,10 +26,15 @@ function request(method, url, data) {
         if (res.statusCode === '200' || parseInt(result.ret_code) === 0) {
           resolve(res.data);
         } else {
+          Taro.showToast({title: result.msg || '网络开小差了哦', icon: 'none'}).then(r => {
+          })
           reject(res);
         }
       },
       fail: function (err) {
+        Taro.hideLoading();
+        Taro.showToast({title: '网络开小差了哦', icon: 'none'}).then(r => {
+        })
         reject(err);
       }
     })
