@@ -106,8 +106,13 @@
   padding-bottom: 20Px;
 
 
-  .at-article__h1, .at-article__info {
+  .at-article__h1 {
     text-align: center;
+    font-size: 44rpx;
+    margin-bottom: 10rpx;
+  }
+  .at-article__info{
+    margin-bottom: 10rpx;
   }
 
   .at-list__item {
