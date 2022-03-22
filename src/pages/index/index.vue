@@ -163,6 +163,7 @@ import TabBar from "../../components/TabBar/TabBar";
 
 export default {
   components: {
+    // eslint-disable-next-line vue/no-unused-components
     AtModal, AtModalHeader, AtModalContent, AtModalAction, AtTextarea, AtButton, AtIcon
   },
   data() {
@@ -197,17 +198,17 @@ export default {
       nextStatus: {},//转盘的下一个状态
       showEdit: false, //是否处于编辑状态
       randomListText: '',//randomList文本域内容
-      randomList: ['北京烤鸭', '泰餐', '寿司', '烧鸡', '盖浇饭', '砂锅', '大排档', '米线', '满汉全席', '西餐', '麻辣烫', '自助餐', '炒面', '快餐', '水果', '西北风', '馄饨', '火锅', '烧烤', '泡面', '速冻水饺', '日本料理', '涮羊肉', '味千拉面', '肯德基', '面包', '扬州炒饭', '自助餐', '茶餐厅', '海底捞', '咖啡', '比萨', '麦当劳', '兰州拉面', '沙县小吃', '烤鱼', '海鲜', '铁板烧', '韩国料理', '粥', '快餐', '东南亚菜', '甜点', '农家菜', '川菜', '粤菜', '湘菜', '本帮菜', '竹笋烤肉']
-    }
+      randomList: []}
   },
   created() {
     const list = Taro.getStorageSync('typeRandomList');
+    let {typeRandomList} = this
+
     if (list) {
-      let {typeRandomList} = this
       Taro.setStorageSync('initialRandomList', typeRandomList)
       typeRandomList = list;
-      this.randomList = list['all']
     }
+    this.randomList = typeRandomList['all']
     this.handleRandom();
   },
   methods: {
