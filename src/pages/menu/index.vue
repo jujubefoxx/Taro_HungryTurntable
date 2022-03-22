@@ -51,15 +51,8 @@ export default {
       current: 0,
       value: false,
       tabList: [
-        {title: '菜谱类型'},
-        {title: '菜谱类型'},
-        {title: '菜谱类型'}
       ],
-      subType: [[{title: '子菜单', open: false, list: [{value: '菜单'}, {value: '菜单'}, {value: '菜单'}]}], [{
-        title: '子菜单',
-        open: false,
-        list: [{value: '菜单'}, {value: '菜单'}, {value: '菜单'}]
-      }]]
+      subType: []
     }
   },
   created() {
