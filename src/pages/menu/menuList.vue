@@ -46,10 +46,18 @@
       :on-change="onChange.bind(this, 'value')"
       :on-action-click="onActionClick"
     />
+    <AtNoticebar
+      v-if="searchTips"
+      close
+      marquee
+      :speed="50"
+    >
+      相关菜谱搜索结果仅供参考，如需精确搜索，请根据菜谱类别进行选择
+    </AtNoticebar>
     <view
-      class="list-container"
       v-for="(list, key) in dataList"
       :key="key"
+      class="list-container"
     >
       <news-list
         v-bind="list"
@@ -67,14 +75,14 @@
 <script>
 import './index.scss'
 import Taro from '@tarojs/taro';
-import {AtSearchBar, AtLoadMore} from 'taro-ui-vue'
+import {AtSearchBar, AtLoadMore, AtNoticebar} from 'taro-ui-vue'
 import Vue from 'vue'
 import {getMenuList} from "../../apis";
 
 export default {
   name: "MenuList",
   components: {
-    AtSearchBar, AtLoadMore
+    AtSearchBar, AtLoadMore, AtNoticebar
   },
   data() {
     return {
@@ -95,6 +103,7 @@ export default {
       appCode: 'e61c205f09f7484581728061e8b8f2af',
       current: 0,
       value: '',
+      searchTips: false,
       menuList: [],
       showapi_res_body: [{
         "cpName": "麻辣烫",
@@ -241,13 +250,19 @@ export default {
     let {menuList, mulitSelectorValues} = this;
     menuList = Taro.getStorageSync('menuList');
     this.menuList = menuList;
+
     if (option.query) {
       const query = JSON.parse(option.query)
-      console.log(query,menuList,menuList.finalMenu)
+      console.log(query, menuList, menuList.finalMenu)
       this.multiSelector = [menuList.firstMenu, menuList.secondMenu[query.firstIndex], menuList.finalMenu[query.firstIndex][query.secondIndex]]
       this.mulitSelectorValues = [query.firstIndex, query.secondIndex + 1, query.finalIndex + 1]
     } else {
       this.multiSelector = [menuList.firstMenu, menuList.secondMenu[0], menuList.finalMenu[0][0]]
+    }
+    if (option.search) {
+      this.value = option.search
+      this.searchTips = true
+      // this.mulitSelectorValues = [7, 0, 0]
     }
     this.fetchData();
   },
@@ -310,8 +325,8 @@ export default {
         Index[2] = value;//修改位置
       }
       this.mulitSelectorValues = Index
-        this.reset();
-        this.fetchData();
+      this.reset();
+      this.fetchData();
     },
     onChange(stateName, value) {
       this[stateName] = value
