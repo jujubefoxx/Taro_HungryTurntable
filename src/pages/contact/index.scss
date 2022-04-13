@@ -1,5 +1,6 @@
 .contact {
   text-align: center;
+
   &-img {
     width: 200Px;
     height: 200Px;
@@ -11,13 +12,27 @@
     display: flex;
     flex-direction: column;
     color: #409eff;
-    text{
+
+    text {
       margin: 5Px;
     }
   }
 
-  &-button{
-    padding: 10Px;
+  &-content {
+    padding: 20px;
+    font-size: 12Px;
+    text-align: left;
+    color: #aaa;
+  }
 
+  &-button {
+    display: block;
+    padding: 10Px;
+    width: 30%;
+    margin: 0 auto;
+
+    .at-button {
+      margin: 20px;
+    }
   }
 }
