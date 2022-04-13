@@ -8,7 +8,7 @@
     <view class="contact-word">
       <view class="contact-content">
         <view>
-          感谢使用今天吃啥大转盘！
+          感谢使用今天吃啥大转盘！&#128521;
         </view>
         <view>
           这个转盘就是肚子饿的时候不知道吃什么写着玩的，转盘样式参考已在源码上标注，源码放在github上，菜谱的接口数据来自阿里云，有什么意见建议或者什么有趣的接口都可以点击下方的意见建议联系我哦
@@ -83,6 +83,7 @@ export default {
         .then(() => Taro.showToast({title: 'git链接已复制至粘贴板，请使用浏览器打开', icon: 'none'}));
     },
     heihei() {
+      Taro.showToast({title: '嘿嘿，不给打赏', icon: 'none'})
       console.log('嘿嘿嘿')
     }
   },
