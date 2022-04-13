@@ -33,7 +33,10 @@
       >
         查看源码
       </AtButton>
-      <AtButton size="small">
+      <AtButton
+        size="small"
+        :on-click="heihei"
+      >
         打赏一下
       </AtButton>
     </view>
@@ -78,6 +81,9 @@ export default {
     getGitLink() {
       Taro.setClipboardData({data: this.gitLink})
         .then(() => Taro.showToast({title: 'git链接已复制至粘贴板，请使用浏览器打开', icon: 'none'}));
+    },
+    heihei() {
+      console.log('嘿嘿嘿')
     }
   },
   onAddToFavorites(res) {
