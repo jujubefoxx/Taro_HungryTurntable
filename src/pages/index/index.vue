@@ -25,6 +25,12 @@
         </view>
       </view>
     </view>
+    <AtNoticebar
+      marquee
+      :speed="50"
+    >
+      Tips: 如果对转盘内容不满意的话可以点击下方按钮编辑成你喜欢的配置哦
+    </AtNoticebar>
     <view class="result">
       {{ result }}
     </view>
@@ -90,6 +96,14 @@
         重置随机列表
       </button>
     </view>
+    <!--    TODO-->
+    <!--    <navigator-->
+    <!--      url="/pages/contact/index"-->
+    <!--      class="contact-button"-->
+    <!--    >-->
+    <!--      <view class="at-icon at-icon-star" />-->
+    <!--      点击此处联系作者-->
+    <!--    </navigator>-->
     <AtModal
       :is-opened="showEdit"
       :on-close="endEdit"
@@ -167,13 +181,22 @@
 import './index.scss'
 import Vue from 'vue'
 import Taro from '@tarojs/taro';
-import {AtModal, AtModalAction, AtModalContent, AtModalHeader, AtTextarea, AtButton, AtIcon} from 'taro-ui-vue'
+import {
+  AtModal,
+  AtModalAction,
+  AtModalContent,
+  AtNoticebar,
+  AtModalHeader,
+  AtTextarea,
+  AtButton,
+  AtIcon
+} from 'taro-ui-vue'
 import TabBar from "../../components/TabBar/TabBar";
 
 export default {
   components: {
     // eslint-disable-next-line vue/no-unused-components
-    AtModal, AtModalHeader, AtModalContent, AtModalAction, AtTextarea, AtButton, AtIcon
+    AtModal, AtModalHeader, AtModalContent, AtModalAction, AtTextarea, AtButton, AtIcon, AtNoticebar
   },
   data() {
     return {

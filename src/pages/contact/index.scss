@@ -1,0 +1,23 @@
+.contact {
+  text-align: center;
+  &-img {
+    width: 200Px;
+    height: 200Px;
+    border-radius: 50%;
+  }
+
+  &-word {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    color: #409eff;
+    text{
+      margin: 5Px;
+    }
+  }
+
+  &-button{
+    padding: 10Px;
+
+  }
+}
