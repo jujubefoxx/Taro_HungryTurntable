@@ -26,13 +26,14 @@
       </view>
     </view>
     <AtNoticebar
-      marquee
+      style="text-align: center"
+      :marquee="false"
       :speed="50"
     >
-      Tips: 如果对转盘内容不满意的话可以点击下方按钮编辑成你喜欢的配置哦
+      对转盘内容不满意的话可以点击下方按钮修改成喜欢的配置哦
     </AtNoticebar>
     <view class="result">
-      {{ result.replaceAll(' ', '') !== '' ? `${result}&#128536;` : '' }}
+      {{ result.indexOf('就决定是你了') !== -1 ? `${result}&#128536;` : result }}
     </view>
     <view class="type-list">
       <AtButton

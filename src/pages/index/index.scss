@@ -271,6 +271,11 @@
   justify-content: space-between;
   align-items: center;
   margin: 10px 0;
+
+  button {
+    padding: 0 20px;
+    display: flex;
+  }
 }
 
 .popBox-list__text {

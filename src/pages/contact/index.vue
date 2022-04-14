@@ -33,12 +33,12 @@
       >
         查看源码
       </AtButton>
-      <AtButton
-        size="small"
-        :on-click="heihei"
-      >
-        打赏一下
-      </AtButton>
+<!--      <AtButton-->
+<!--        size="small"-->
+<!--        :on-click="heihei"-->
+<!--      >-->
+<!--        打赏一下-->
+<!--      </AtButton>-->
     </view>
   </view>
 </template>
