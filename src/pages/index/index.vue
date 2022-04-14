@@ -97,14 +97,13 @@
         重置随机列表
       </button>
     </view>
-    <!--    TODO-->
-    <!--    <navigator-->
-    <!--      url="/pages/contact/index"-->
-    <!--      class="contact-button"-->
-    <!--    >-->
-    <!--      <view class="at-icon at-icon-star" />-->
-    <!--      点击此处联系作者-->
-    <!--    </navigator>-->
+    <navigator
+      url="/pages/contact/index"
+      class="contact-button"
+    >
+      <view class="at-icon at-icon-star"/>
+      点击此处联系作者
+    </navigator>
     <AtModal
       :is-opened="showEdit"
       :on-close="endEdit"
