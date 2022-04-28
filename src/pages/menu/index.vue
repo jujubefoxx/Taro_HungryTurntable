@@ -50,15 +50,43 @@ export default {
       appCode: 'e61c205f09f7484581728061e8b8f2af',
       current: 0,
       value: false,
-      tabList: [
-      ],
+      tabList: [],
       subType: []
     }
   },
   created() {
     this.getType()
   },
+  onLoad() {
+    console.log('onload')
+    this.initAd();
+  },
   methods: {
+    initAd() {
+      // 在页面中定义插屏广告
+      let interstitialAd = null
+      // 在页面onLoad回调事件中创建插屏广告实例
+      if (Taro.createInterstitialAd) {
+        interstitialAd = Taro.createInterstitialAd({
+          adUnitId: 'adunit-c59134818dfcced2'
+        })
+        interstitialAd.onLoad(() => {
+          console.log('onLoad event emit')
+        })
+        interstitialAd.onError((err) => {
+          console.log('onError event emit', err)
+        })
+        interstitialAd.onClose((res) => {
+          console.log('onClose event emit', res)
+        })
+      }
+      // 在适合的场景显示插屏广告
+      if (interstitialAd) {
+        interstitialAd.show().catch((err) => {
+          console.error(err)
+        })
+      }
+    },
     //点击九宫格
     clickList(item, index, title, key) {
       const {tabList, current} = this

@@ -1,5 +1,5 @@
 <template>
-  <view class="index">
+  <view :class="['index',dialogVisible||showEdit?'index--fixed':'']">
     <view class="wrapper">
       <view
         v-for="(light,index) in foodList"
@@ -104,6 +104,7 @@
       <view class="at-icon at-icon-star"/>
       点击此处联系作者
     </navigator>
+    <ad unit-id="adunit-64fa6e9dc5192905" ad-type="video" ad-theme="white"></ad>
     <AtModal
       :is-opened="showEdit"
       :on-close="endEdit"

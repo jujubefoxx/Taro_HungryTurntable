@@ -64,6 +64,7 @@
         :index="key"
         @choose="handleClickNews(key)"
       />
+      <ad v-if="(key+1)%9===0" unit-id="adunit-ecc87276430967fb"></ad>
     </view>
     <AtLoadMore
       :on-click="handleClick"

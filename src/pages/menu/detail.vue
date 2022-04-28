@@ -60,7 +60,7 @@
         color="#6190E8"
       />
     </AtDivider>
-    <navigator url="/pages/menu/menuList">
+    <navigator url="/pages/menu/menuList" style="margin-bottom: 20px">
       <AtButton
         type="secondary"
         size="small"
@@ -68,7 +68,7 @@
         更多菜谱
       </AtButton>
     </navigator>
-
+    <ad unit-id="adunit-64fa6e9dc5192905" ad-type="video" ad-theme="white"></ad>
   </view>
 </template>
 
