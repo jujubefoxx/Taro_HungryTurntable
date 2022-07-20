@@ -2,13 +2,13 @@
   <view :class="['index',dialogVisible||showEdit?'index--fixed':'']">
     <view class="wrapper">
       <view
-        v-for="(light,index) in foodList"
+        v-for="(light,index) in activeFoodList"
         :key="index"
         :class="['light',onRotation?'light-twinkling':'']"
       />
       <view class="panel">
         <view
-          v-for="(food,index) in foodList"
+          v-for="(food,index) in activeFoodList"
           :key="index"
           class="sector"
         >
@@ -18,17 +18,17 @@
         </view>
         <view
           :class="['pointer',onRotation?'pointer-trans':'']"
-          @transitionend="afterTransitionend"
           @tap="handleClick"
+          @transitionend="afterTransitionend"
         >
           吃什么呢
         </view>
       </view>
     </view>
     <AtNoticebar
-      style="text-align: center"
       :marquee="false"
       :speed="50"
+      style="text-align: center"
     >
       对转盘内容不满意的话可以点击下方按钮修改成喜欢的配置哦
     </AtNoticebar>
@@ -39,10 +39,10 @@
       <AtButton
         v-for="(typeText,index) in typeList"
         :key="index"
-        :type="activeType===typeText.alias?'primary':'secondary'"
-        size="small"
-        circle
         :on-click="(e) =>changeType(index,typeText.alias)"
+        :type="activeType===typeText.alias?'primary':'secondary'"
+        circle
+        size="small"
       >
         {{ typeText.title }}
       </AtButton>
@@ -57,8 +57,8 @@
       </navigator>
       <navigator
         v-show="nextStatus.food&&!onRotation&&['self','fit'].includes(activeType)"
-        class="menu-list__text"
         :url="`/pages/menu/menuList?search=${nextStatus.food}`"
+        class="menu-list__text"
       >
         相关菜谱
       </navigator>
@@ -66,8 +66,8 @@
     </view>
     <view class="random-button">
       <button
-        class="btn-max-w"
         :plain="true"
+        class="btn-max-w"
         @tap="handleRandom"
       >
         <view class="at-icon at-icon-shuffle-play"/>
@@ -81,16 +81,16 @@
         编辑随机列表
       </button>
       <button
-        class="button--success"
         :plain="true"
+        class="button--success"
         @tap="showEdit = true"
       >
         <view class="at-icon at-icon-settings"/>
         编辑当前配置
       </button>
       <button
-        class="button--warn"
         :plain="false"
+        class="button--warn"
         @tap="handleClear"
       >
         <view class="at-icon at-icon-reload"/>
@@ -98,13 +98,13 @@
       </button>
     </view>
     <navigator
-      url="/pages/contact/index"
       class="contact-button"
+      url="/pages/contact/index"
     >
       <view class="at-icon at-icon-star"/>
       点击此处联系作者
     </navigator>
-    <ad unit-id="adunit-64fa6e9dc5192905" ad-type="video" ad-theme="white"></ad>
+    <ad ad-theme="white" ad-type="video" unit-id="adunit-64fa6e9dc5192905"></ad>
     <AtModal
       :is-opened="showEdit"
       :on-close="endEdit"
@@ -115,7 +115,7 @@
           <view>
             <view>
               <view
-                v-for="(food,index) in foodList"
+                v-for="(food,index) in activeFoodList"
                 :key="index"
                 class="popBox-list"
               >
@@ -129,8 +129,8 @@
                   随机
                 </button>
                 <button
-                  size="mini"
                   class="button-primary"
+                  size="mini"
                   @tap="handleEdit(index)"
                 >
                   修改
@@ -155,11 +155,11 @@
       <AtModalHeader>随机配置</AtModalHeader>
       <AtModalContent>
         <AtTextarea
-          :value="randomListText"
-          :on-change="handleChange"
           :count="false"
-          height="400"
           :max-length="900"
+          :on-change="handleChange"
+          :value="randomListText"
+          height="400"
           placeholder="请输入内容"
         />
         <text style="font-size: 12Px;text-align: left">
@@ -204,7 +204,16 @@ export default {
       imgUrl: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202005%2F17%2F20200517215354_mrxgp.thumb.400_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648975866&t=0200ed81628758dd8d46609998cfb3fe',
       dialogVisible: false,
       resetState: false,
-      foodList: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],//食物列表
+      foodTypeList: {
+        all: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+        drink: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+        fit: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+        friend: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+        sweet: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+        quick: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+        self: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+        snacks: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+      },
       activeType: 'all',
       typeList: [
         {title: '啥都想吃', alias: 'all'},
@@ -234,16 +243,28 @@ export default {
       randomList: []
     }
   },
+  computed: {
+    activeFoodList() {
+      return this.foodTypeList[this.activeType]
+    }
+  },
   created() {
     const list = Taro.getStorageSync('typeRandomList');
+    const foodList = Taro.getStorageSync(this.activeType)
+
     let {typeRandomList} = this
 
     if (list) {
       Taro.setStorageSync('initialRandomList', typeRandomList)
       typeRandomList = list;
     }
-    this.randomList = typeRandomList['all']
-    this.handleRandom();
+    this.randomList = typeRandomList['all'];
+
+    if (foodList) {
+      this.foodTypeList[this.activeType] = foodList;
+    } else {
+      this.handleRandom();
+    }
   },
   methods: {
     //清空缓存
@@ -267,8 +288,6 @@ export default {
           }
         }
       })
-
-
     },
     //改变类型
     changeType(index, alias) {
@@ -279,7 +298,12 @@ export default {
         this.resetPointer();
       }
       this.randomList = this.typeRandomList[this.activeType];//当前转盘数据
-      this.handleRandom();
+      const foodList = Taro.getStorageSync(this.activeType)
+      if (foodList) {
+        this.foodTypeList[this.activeType] = foodList;
+      } else {
+        this.handleRandom();
+      }
     },
     //复原指针
     resetPointer() {
@@ -323,36 +347,38 @@ export default {
     },
     //手动随机食物配置
     handleRandom() {
-      const {randomList, foodList} = this;
-
+      const {randomList, foodTypeList, activeType} = this;
+      const list = foodTypeList[activeType];
       let newArr = JSON.parse(JSON.stringify(randomList)) //深拷贝
-      this.foodList = foodList.map((item) => {
+      this.foodTypeList[activeType] = list.map((item) => {
         const index = this.randomNumBoth(0, newArr.length)
         let result = newArr[index];
         //当随机列表的数不够的情况下随机选取已有的食物
         if (result) {
           newArr.splice(index, 1) //去重
         } else {
-          result = foodList[this.randomNumBoth(0, foodList.length)]
+          result = list[this.randomNumBoth(0, list.length)]
         }
         return result
-      });//修改为新的随机列表
 
+      });//修改为新的随机列表
+      Taro.setStorageSync(activeType, this.foodTypeList[activeType])
       if (!this.nextStatus.deg) return;//修改结果中的食物
       let currentDeg = this.nextStatus.deg; //如果当前已有角度则获取角度 无则为0
       //获取结果位置的食物
-      this.nextStatus.food = this.foodList[Math.floor((currentDeg + 18) % 360 / 36)];
+      this.nextStatus.food = this.foodTypeList[this.activeType][Math.floor((currentDeg + 18) % 360 / 36)];
       this.result = `就决定是你了！${this.nextStatus.food}`;
     },
     //手动随机单个食物配置
     handleRandomOne(index) {
-      const {randomList, foodList} = this;
+      const {randomList, activeType} = this;
       const number = this.randomNumBoth(0, randomList.length);
-      const isResult = this.foodList[index] === this.nextStatus.food;//修改的食物是否为当前结果的食物
-      this.foodList[index] = randomList[number]
+      const isResult = this.foodTypeList[activeType][index] === this.nextStatus.food;//修改的食物是否为当前结果的食物
+      this.foodTypeList[activeType][index] = randomList[number]
 
-      Vue.set(this.foodList, index, randomList[number]) //更新新的值
+      Vue.set(this.foodTypeList[activeType], index, randomList[number]) //更新新的值
       Taro.showToast({title: `已随机为：${randomList[number]}`, icon: 'none'})
+      Taro.setStorageSync(activeType, this.foodTypeList[activeType])
 
       if (!this.nextStatus.deg || !isResult) return;//修改结果中的食物
 
@@ -383,7 +409,7 @@ export default {
       // 转三圈到四圈
       let rotateDeg = Math.random() * 360 + 1080;
       currentDeg += rotateDeg; //加上旋转的随机角度
-      let rewardText = this.foodList[Math.floor((currentDeg + 18) % 360 / 36)] //获取结果位置的食物
+      let rewardText = this.foodTypeList[this.activeType][Math.floor((currentDeg + 18) % 360 / 36)] //获取结果位置的食物
       this.nextStatus = {
         deg: currentDeg,
         food: rewardText
@@ -407,19 +433,20 @@ export default {
       this.getReward();//获取结果
     },
     handleEdit(index) {
-      const {foodList, nextStatus} = this;
+      const {foodTypeList, activeType, nextStatus} = this;
       const _this = this;
       Taro.showModal({
         editable: true,
         title: '提示',
-        placeholderText: `请输入需要替换${this.foodList[index]}的食物`,
+        placeholderText: `请输入需要替换${this.foodTypeList[this.activeType][index]}的食物`,
         success(res) {
           const {content, confirm, cancel} = res;
           if (confirm) {
             if (content) {
+              Vue.set(_this.foodTypeList[activeType], index, content) //更新新的值
+              Taro.setStorageSync(activeType, _this.foodTypeList[activeType])
               Taro.showToast({title: `已修改为：${content}`, icon: 'none'})
-              const isResult = foodList[index] === nextStatus.food;//修改的食物是否为当前结果的食物
-              Vue.set(foodList, index, content) //更新新的值
+              const isResult = foodTypeList[activeType][index] === nextStatus.food;//修改的食物是否为当前结果的食物
               if (!nextStatus.deg || !isResult) return;//修改结果中的食物
               //获取结果位置的食物
               nextStatus.food = content;
