@@ -71,14 +71,7 @@
         @tap="handleRandom"
       >
         <view class="at-icon at-icon-shuffle-play"/>
-        随机当前配置
-      </button>
-      <button
-        class="button--primary"
-        @tap="handleEditRandomList"
-      >
-        <view class="at-icon at-icon-edit"/>
-        编辑随机列表
+        随机一下转盘
       </button>
       <button
         :plain="true"
@@ -86,7 +79,14 @@
         @tap="showEdit = true"
       >
         <view class="at-icon at-icon-settings"/>
-        编辑当前配置
+        编辑一下转盘
+      </button>
+      <button
+        class="button--primary"
+        @tap="handleEditRandomList"
+      >
+        <view class="at-icon at-icon-edit"/>
+        编辑随机清单
       </button>
       <button
         :plain="false"
@@ -94,7 +94,7 @@
         @tap="handleClear"
       >
         <view class="at-icon at-icon-reload"/>
-        重置随机列表
+        重置转盘内容
       </button>
     </view>
     <navigator
@@ -102,7 +102,7 @@
       url="/pages/contact/index"
     >
       <view class="at-icon at-icon-star"/>
-      点击此处联系作者
+      喜欢可以点击广告给作者鼓励哦(意见建议点这里)
     </navigator>
     <ad ad-theme="white" ad-type="video" unit-id="adunit-64fa6e9dc5192905"></ad>
     <AtModal
@@ -302,7 +302,7 @@ export default {
       if (foodList) {
         this.foodTypeList[this.activeType] = foodList;
       } else {
-        this.handleRandom();
+        this.handleRandom(false);
       }
     },
     //复原指针
@@ -346,7 +346,7 @@ export default {
       })
     },
     //手动随机食物配置
-    handleRandom() {
+    handleRandom(handle = true) {
       const {randomList, foodTypeList, activeType} = this;
       const list = foodTypeList[activeType];
       let newArr = JSON.parse(JSON.stringify(randomList)) //深拷贝
@@ -362,7 +362,9 @@ export default {
         return result
 
       });//修改为新的随机列表
-      Taro.setStorageSync(activeType, this.foodTypeList[activeType])
+      if (handle) {
+        Taro.setStorageSync(activeType, this.foodTypeList[activeType])
+      }
       if (!this.nextStatus.deg) return;//修改结果中的食物
       let currentDeg = this.nextStatus.deg; //如果当前已有角度则获取角度 无则为0
       //获取结果位置的食物
