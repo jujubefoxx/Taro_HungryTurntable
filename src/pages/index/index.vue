@@ -47,23 +47,23 @@
         {{ typeText.title }}
       </AtButton>
     </view>
-    <view class="menu-list">
-      <navigator
-        v-show="!['self','fit'].includes(activeType)||!nextStatus.food||onRotation"
-        class="menu-list__text"
-        url="/pages/menu/index"
-      >
-        菜谱大全
-      </navigator>
-      <navigator
-        v-show="nextStatus.food&&!onRotation&&['self','fit'].includes(activeType)"
-        :url="`/pages/menu/menuList?search=${nextStatus.food}`"
-        class="menu-list__text"
-      >
-        相关菜谱
-      </navigator>
-      <!--      <text class="menu-list__text">菜谱大全</text>-->
-    </view>
+    <!--    <view class="menu-list">-->
+    <!--      <navigator-->
+    <!--        v-show="!['self','fit'].includes(activeType)||!nextStatus.food||onRotation"-->
+    <!--        class="menu-list__text"-->
+    <!--        url="/pages/menu/index"-->
+    <!--      >-->
+    <!--        菜谱大全-->
+    <!--      </navigator>-->
+    <!--      <navigator-->
+    <!--        v-show="nextStatus.food&&!onRotation&&['self','fit'].includes(activeType)"-->
+    <!--        :url="`/pages/menu/menuList?search=${nextStatus.food}`"-->
+    <!--        class="menu-list__text"-->
+    <!--      >-->
+    <!--        相关菜谱-->
+    <!--      </navigator>-->
+    <!--      &lt;!&ndash;      <text class="menu-list__text">菜谱大全</text>&ndash;&gt;-->
+    <!--    </view>-->
     <view class="random-button">
       <button
         :plain="true"
