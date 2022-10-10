@@ -26,11 +26,12 @@
       </view>
     </view>
     <AtNoticebar
-      :marquee="false"
+      :marquee="true"
+      :single="true"
       :speed="50"
       style="text-align: center"
     >
-      对转盘内容不满意的话可以点击下方按钮修改成喜欢的配置哦
+      下方按钮可以修改转盘内容哦，需要提供意见建议可以点击最底部按钮联系客服
     </AtNoticebar>
     <view class="result">
       {{ result.indexOf('就决定是你了') !== -1 ? `${result}&#128536;` : result }}
