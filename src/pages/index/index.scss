@@ -14,6 +14,10 @@
     font-size: 14Px;
     margin: 10Px;
 
+    &:last-child {
+      margin-bottom: 0;
+    }
+
     .at-icon {
       margin-right: 4Px;
     }
@@ -64,7 +68,7 @@
   background-color: #ff5555;
   box-shadow: #000000 0 0 5Px;
   border-radius: 50%;
-  margin: 20Px auto;
+  margin: 5Px auto;
 
 }
 
@@ -258,10 +262,11 @@
 }
 
 .result {
-  height: 50Px;
-  line-height: 50Px;
+  height: 30Px;
+  line-height: 30Px;
   text-align: center;
   /*margin: 20Px 60Px;*/
+  padding-bottom: 5Px;
   margin: 0 auto;
 
 }
@@ -324,7 +329,7 @@
   justify-content: center;
   font-size: 12Px;
   color: #aaa;
-  padding-bottom: 20px;
+  padding-bottom: 30px;
 }
 
 @keyframes twinkling {

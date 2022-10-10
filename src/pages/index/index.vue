@@ -97,14 +97,14 @@
         重置转盘内容
       </button>
     </view>
+    <ad ad-theme="white" ad-type="video" unit-id="adunit-64fa6e9dc5192905"></ad>
     <navigator
       class="contact-button"
       url="/pages/contact/index"
     >
       <view class="at-icon at-icon-star"/>
-      喜欢可以点击广告给作者鼓励哦(意见建议点这里)
+      意见建议或查看源码
     </navigator>
-    <ad ad-theme="white" ad-type="video" unit-id="adunit-64fa6e9dc5192905"></ad>
     <AtModal
       :is-opened="showEdit"
       :on-close="endEdit"
@@ -201,6 +201,7 @@ export default {
   },
   data() {
     return {
+      showNotice: true,
       imgUrl: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fitem%2F202005%2F17%2F20200517215354_mrxgp.thumb.400_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648975866&t=0200ed81628758dd8d46609998cfb3fe',
       dialogVisible: false,
       resetState: false,
