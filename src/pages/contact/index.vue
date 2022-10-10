@@ -35,12 +35,12 @@
       >
         看广告查看源码
       </AtButton>
-      <AtButton
-        :on-click="previewImg"
-        size="small"
-      >
-        悄悄地打赏一下
-      </AtButton>
+      <!--      <AtButton-->
+      <!--        :on-click="previewImg"-->
+      <!--        size="small"-->
+      <!--      >-->
+      <!--        悄悄地打赏一下-->
+      <!--      </AtButton>-->
     </view>
     <!--    <view>-->
     <!--      <img alt="打赏码" src="src/static/money.jpg" @click="previewImg">-->
