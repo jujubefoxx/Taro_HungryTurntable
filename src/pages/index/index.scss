@@ -94,126 +94,51 @@
   background-color: #ffe58b;
 }
 
-.light:nth-child(2) {
-  transform: rotate(36deg);
-}
-
-.light:nth-child(3) {
-  transform: rotate(72deg);
-}
-
-.light:nth-child(4) {
-  transform: rotate(108deg);
-}
-
-.light:nth-child(5) {
-  transform: rotate(144deg);
-}
-
-.light:nth-child(6) {
-  transform: rotate(180deg);
-}
-
-.light:nth-child(7) {
-  transform: rotate(216deg);
-}
-
-.light:nth-child(8) {
-  transform: rotate(252deg);
-}
-
-.light:nth-child(9) {
-  transform: rotate(288deg);
-}
-
-.light:nth-child(10) {
-  transform: rotate(324deg);
-}
 
 .panel {
   position: relative;
   height: 200Px;
   width: 200Px;
-  background-color: #b7b7b7;
+  background-color: #f7c894;
   border-radius: 100Px;
 }
 
-.sector {
-  position: absolute;
-  left: 100Px;
-  top: 0;
-  width: 100Px;
-  height: 200Px;
-  font-size: 14Px;
-  border-radius: 0 100Px 100Px 0;
+
+.content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  border-radius: 50%;
   overflow: hidden;
-  transform-origin: left center;
 }
 
-.sector:nth-child(1) {
-  transform: rotate(-18deg);
+.fan-blade {
+  position: absolute;
+  width: 100px;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 5Px 15Px;
+  display: block;
+  height: 50%;
+  clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+  transform-origin: 50% 100%;
 }
 
-.sector:nth-child(2) {
-  transform: rotate(18deg);
+.fan-blade text {
+  display: block;
+  font-size: 14Px;
+  color: #d46854;
 }
 
-.sector:nth-child(3) {
-  transform: rotate(54deg);
-}
 
-.sector:nth-child(4) {
-  transform: rotate(90deg);
-}
-
-.sector:nth-child(5) {
-  transform: rotate(126deg);
-}
-
-.sector:nth-child(6) {
-  transform: rotate(162deg);
-}
-
-.sector:nth-child(7) {
-  transform: rotate(198deg);
-}
-
-.sector:nth-child(8) {
-  transform: rotate(234deg);
-}
-
-.sector:nth-child(9) {
-  transform: rotate(270deg);
-}
-
-.sector:nth-child(10) {
-  transform: rotate(306deg);
-}
-
-.sector:nth-child(2n+1) .sector-inner {
+.fan-blade:nth-child(2n+1) {
   background: #fef6e0;
 }
 
-.sector:nth-child(2n) .sector-inner {
+.fan-blade:nth-child(2n) {
   background: #ffffff;
-}
-
-.sector-inner {
-  text-align: center;
-  display: block;
-  width: 40Px;
-  padding: 5Px 3Px 0 57Px;
-  height: 195Px;
-  transform: translateX(-100Px) rotate(36deg);
-  transform-origin: right center;
-  border-radius: 100Px 0 0 100Px;
-}
-
-.sector-inner text {
-  display: block;
-  transform-origin: center;
-  transform: rotate(-19deg);
-  color: #d46854;
 }
 
 .pointer-trans {
@@ -235,7 +160,6 @@
   background-color: #ff5350;
   border-radius: 50%;
   border: 1Px solid #ff5350;
-
 }
 
 .pointer::after {

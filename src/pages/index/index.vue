@@ -5,14 +5,14 @@
         v-for="(light,index) in activeFoodList"
         :key="index"
         :class="['light',onRotation?'light-twinkling':'']"
+        :style="`transform: rotate(${lightReg * index}deg);`"
       />
       <view class="panel">
-        <view
-          v-for="(food,index) in activeFoodList"
-          :key="index"
-          class="sector"
-        >
-          <view class="sector-inner">
+        <view class="content">
+          <view v-for="(food,index) in activeFoodList" :key="index"
+                :style="`width:${sectorWidth}px;transform: rotate(${lightReg * index}deg);`"
+                class="fan-blade"
+          >
             <text>{{ food.length > 7 ? `${food.slice(0, 5)}...` : food }}</text>
           </view>
         </view>
@@ -248,9 +248,25 @@ export default {
   computed: {
     activeFoodList() {
       return this.foodTypeList[this.activeType]
+    },
+    // 灯的角度
+    lightReg() {
+      return 360 / (this.activeFoodList.length);
+    },
+    // 选择器的角度
+    sectorReg() {
+      return (360 / (this.activeFoodList.length)) / 2;
+    },
+    sectorWidth() {
+      let num = this.activeFoodList.length;       //个数
+      let diameter = 200      //转盘直径
+      let width = 0           //扇叶元素宽度
+      let deg = 360 / num     //每一叶的旋转角度
+      return diameter * Math.tan((deg / 2) * Math.PI / 180)
     }
   },
   created() {
+    return;
     const list = Taro.getStorageSync('typeRandomList');
     const foodList = Taro.getStorageSync(this.activeType)
 
@@ -370,7 +386,7 @@ export default {
       if (!this.nextStatus.deg) return;//修改结果中的食物
       let currentDeg = this.nextStatus.deg; //如果当前已有角度则获取角度 无则为0
       //获取结果位置的食物
-      this.nextStatus.food = this.foodTypeList[this.activeType][Math.floor((currentDeg + 18) % 360 / 36)];
+      this.nextStatus.food = this.foodTypeList[this.activeType][Math.floor((currentDeg + this.sectorReg) % 360 / this.lightReg)];
       this.result = `就决定是你了！${this.nextStatus.food}`;
     },
     //手动随机单个食物配置
@@ -413,7 +429,7 @@ export default {
       // 转三圈到四圈
       let rotateDeg = Math.random() * 360 + 1080;
       currentDeg += rotateDeg; //加上旋转的随机角度
-      let rewardText = this.foodTypeList[this.activeType][Math.floor((currentDeg + 18) % 360 / 36)] //获取结果位置的食物
+      let rewardText = this.foodTypeList[this.activeType][Math.floor((currentDeg + this.sectorReg) % 360 / this.lightReg)] //获取结果位置的食物
       this.nextStatus = {
         deg: currentDeg,
         food: rewardText
