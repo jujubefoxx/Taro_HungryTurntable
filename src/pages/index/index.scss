@@ -104,7 +104,7 @@
 }
 
 
-.content {
+.panel-content {
   position: relative;
   width: 100%;
   height: 100%;
@@ -114,32 +114,53 @@
   overflow: hidden;
 }
 
-.fan-blade {
+.panel-blade {
   position: absolute;
   width: 100px;
   text-align: center;
   box-sizing: border-box;
-  padding: 5Px 15Px;
+  padding: 10Px 15Px;
   display: block;
   height: 50%;
   clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
   transform-origin: 50% 100%;
 }
 
-.fan-blade text {
+.panel-blade text {
   display: block;
   font-size: 14Px;
   color: #d46854;
 }
 
 
-.fan-blade:nth-child(2n+1) {
+.panel-blade--even:nth-child(2n+1) {
   background: #fef6e0;
 }
 
-.fan-blade:nth-child(2n) {
+.panel-blade--even:nth-child(2n) {
   background: #ffffff;
 }
+
+.panel-blade--odd:nth-child(5n+1) {
+  background: #F6E9E6;
+}
+
+.panel-blade--odd:nth-child(5n+2) {
+  background: #fef6e0;
+}
+
+.panel-blade--odd:nth-child(5n+3) {
+  background: #ffffff;
+}
+
+.panel-blade--odd:nth-child(5n+4) {
+  background: #fef6e0;
+}
+
+.panel-blade--odd:nth-child(5n+5) {
+  background: #ffffff;
+}
+
 
 .pointer-trans {
   transition: transform 3s cubic-bezier(.2, .93, .43, 1);

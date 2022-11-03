@@ -8,10 +8,11 @@
         :style="`transform: rotate(${lightReg * index}deg);`"
       />
       <view class="panel">
-        <view class="content">
+        <view class="panel-content">
           <view v-for="(food,index) in activeFoodList" :key="index"
+                :class="!isOddList?'panel-blade--even':'panel-blade--odd'"
                 :style="`width:${sectorWidth}px;transform: rotate(${lightReg * index}deg);`"
-                class="fan-blade"
+                class="panel-blade"
           >
             <text>{{ food.length > 7 ? `${food.slice(0, 5)}...` : food }}</text>
           </view>
@@ -207,7 +208,7 @@ export default {
       dialogVisible: false,
       resetState: false,
       foodTypeList: {
-        all: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+        all: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭"],
         drink: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
         fit: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
         friend: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
@@ -246,6 +247,9 @@ export default {
     }
   },
   computed: {
+    isOddList() {
+      return this.activeFoodList.length % 2 !== 0;
+    },
     activeFoodList() {
       return this.foodTypeList[this.activeType]
     },
@@ -259,9 +263,9 @@ export default {
     },
     sectorWidth() {
       let num = this.activeFoodList.length;       //个数
-      let diameter = 200      //转盘直径
-      let width = 0           //扇叶元素宽度
-      let deg = 360 / num     //每一叶的旋转角度
+      let diameter = 200;      //转盘直径
+      let width = 0;           //扇叶元素宽度
+      let deg = 360 / num;     //每一叶的旋转角度
       return diameter * Math.tan((deg / 2) * Math.PI / 180)
     }
   },
