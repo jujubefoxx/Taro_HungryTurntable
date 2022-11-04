@@ -209,7 +209,7 @@ export default {
       dialogVisible: false,
       resetState: false,
       foodTypeList: {
-        all: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
+        all: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅"],
         drink: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
         fit: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
         friend: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
@@ -275,12 +275,14 @@ export default {
     }
   },
   created() {
+    let {typeRandomList, foodTypeList} = this;
+    Taro.setStorageSync('initialRandomList', typeRandomList)
+    Taro.setStorageSync('initialFoodTypeList', foodTypeList)
+
     const list = Taro.getStorageSync('typeRandomList');
     const foodList = Taro.getStorageSync(this.activeType)
 
-    let {typeRandomList} = this;
     if (list) {
-      Taro.setStorageSync('initialRandomList', typeRandomList)
       typeRandomList = list;
     }
     this.randomList = typeRandomList['all'];
@@ -298,14 +300,16 @@ export default {
       const _this = this;
       Taro.showModal({
         title: '提示',
-        content: '重置配置会将你自定义的菜单全部恢复为初始数据，是否确认重置？',
+        content: '重置配置会将你自定义的转盘全部恢复为初始数据，是否确认重置？',
         success(res) {
           console.log(res)
 
           if (res.confirm) {
             const list = Taro.getStorageSync('initialRandomList'); //获取初始值
+            const foodList = Taro.getStorageSync('initialFoodTypeList'); //获取初始值
             if (list) {
               _this.typeRandomList = list;//赋值
+              _this.foodTypeList = foodList;//赋值
               _this.handleRandom();//随机转盘数据
               _this.randomList = _this.typeRandomList[_this.activeType];//当前转盘数据
               Taro.clearStorageSync() //清空缓存
