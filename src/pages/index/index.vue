@@ -69,19 +69,19 @@
     <view class="random-button">
       <button
         :plain="true"
-        class="btn-max-w"
-        @tap="handleRandom"
-      >
-        <view class="at-icon at-icon-shuffle-play"/>
-        随机一下转盘
-      </button>
-      <button
-        :plain="true"
         class="button--success"
         @tap="showEdit = true"
       >
         <view class="at-icon at-icon-settings"/>
         定制我的转盘
+      </button>
+      <button
+        :plain="true"
+        class="button--normal"
+        @tap="handleRandom"
+      >
+        <view class="at-icon at-icon-shuffle-play"/>
+        随机一下转盘
       </button>
       <button
         class="button--primary"
@@ -111,7 +111,7 @@
       :is-opened="showEdit"
       :on-close="endEdit"
     >
-      <AtModalHeader>当前配置</AtModalHeader>
+      <AtModalHeader>当前转盘</AtModalHeader>
       <AtModalContent>
         <view class="content">
           <view>
@@ -124,20 +124,21 @@
                 <text class="popBox-list__text">
                   {{ food }}
                 </text>
-                <button
-                  size="mini"
-                  @tap="handleRandomOne(index)"
-                >
-                  随机
-                </button>
-                <button
-                  class="button-primary"
-                  size="mini"
-                  @tap="handleEdit(index)"
-                >
-                  修改
-                </button>
+                <view class="popBox-list__btn" @tap="handleEdit(index)">
+                  <AtIcon color="ccc" size="16" value="edit"></AtIcon>
+                </view>
+                <view class="popBox-list__btn" @tap="handleRandomOne(index)">
+                  <AtIcon color="ccc" size="16" value="shuffle-play"></AtIcon>
+                </view>
+                <view v-if="activeFoodList.length>2" class="popBox-list__btn" @tap="handleDelete(index)">
+                  <AtIcon color="ccc" size="16" value="trash"></AtIcon>
+                </view>
+
               </view>
+            </view>
+            <view v-if="activeFoodList.length<10" class="popBox-list__bottom" @tap="handleAddOne()">
+              <AtIcon color="ccc" size="20" value="add-circle"></AtIcon>
+              新增
             </view>
           </view>
         </view>
@@ -251,7 +252,7 @@ export default {
       return this.activeFoodList.length % 2 !== 0;
     },
     activeFoodList() {
-      return this.foodTypeList[this.activeType]
+      return this.foodTypeList[this.activeType];
     },
     // 灯的角度
     lightReg() {
@@ -266,15 +267,18 @@ export default {
       let diameter = 200;      //转盘直径
       let width = 0;           //扇叶元素宽度
       let deg = 360 / num;     //每一叶的旋转角度
-      return diameter * Math.tan((deg / 2) * Math.PI / 180)
+      if (num === 2) {
+        return 10000
+      } else {
+        return diameter * Math.tan((deg / 2) * Math.PI / 180)
+      }
     }
   },
   created() {
     const list = Taro.getStorageSync('typeRandomList');
     const foodList = Taro.getStorageSync(this.activeType)
 
-    let {typeRandomList} = this
-
+    let {typeRandomList} = this;
     if (list) {
       Taro.setStorageSync('initialRandomList', typeRandomList)
       typeRandomList = list;
@@ -282,10 +286,11 @@ export default {
     this.randomList = typeRandomList['all'];
 
     if (foodList) {
-      this.foodTypeList[this.activeType] = foodList;
+      this.foodTypeList[this.activeType] = foodList.filter(i => i);
     } else {
       this.handleRandom();
     }
+
   },
   methods: {
     //清空缓存
@@ -455,13 +460,14 @@ export default {
       this.onRotation = true; //开启旋转状态 禁止点击事件
       this.getReward();//获取结果
     },
+    // 编辑某一块
     handleEdit(index) {
       const {foodTypeList, activeType, nextStatus} = this;
       const _this = this;
       Taro.showModal({
         editable: true,
         title: '提示',
-        placeholderText: `请输入需要替换${this.foodTypeList[this.activeType][index]}的食物`,
+        placeholderText: `请输入需要替换${this.foodTypeList[this.activeType][index]}的内容`,
         success(res) {
           const {content, confirm, cancel} = res;
           if (confirm) {
@@ -477,15 +483,50 @@ export default {
             } else {
               Taro.showToast({title: '内容不能为空', icon: 'none'})
             }
-          } else if (cancel) {
-            Taro.showToast({title: '取消修改', icon: 'none'})
           }
         },
         fail() {
           Taro.showToast({title: '取消修改', icon: 'none'})
         }
       })
-    }
+    },
+    // 删除某一项
+    handleDelete(index) {
+      const food = this.foodTypeList[this.activeType][index];
+      this.foodTypeList[this.activeType].splice(index, 1);
+      Taro.showToast({title: `已删除${food}`, icon: 'none'})
+      this.resetPointer();
+      Taro.setStorageSync(this.activeType, this.foodTypeList[this.activeType])
+    },
+    // 新增一项
+    handleAddOne() {
+      const {foodTypeList, activeType, nextStatus} = this;
+      const _this = this;
+      Taro.showModal({
+        editable: true,
+        title: '提示',
+        placeholderText: `请输入需要新增的内容`,
+        success(res) {
+          const {content, confirm} = res;
+          if (confirm) {
+            if (content) {
+              foodTypeList[activeType].push(content);
+              // Vue.set(_this.foodTypeList, activeType, '') //更新新的值
+              Taro.setStorageSync(activeType, _this.foodTypeList[activeType])
+              Taro.showToast({title: `已添加${content}`, icon: 'none'})
+              if (nextStatus.deg) {
+                _this.resetPointer();
+              }
+            } else {
+              Taro.showToast({title: '内容不能为空', icon: 'none'})
+            }
+          }
+        },
+        fail() {
+          Taro.showToast({title: '取消修改', icon: 'none'})
+        }
+      })
+    },
   },
   onAddToFavorites(res) {
     return {

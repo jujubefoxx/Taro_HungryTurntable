@@ -36,6 +36,11 @@
       border-color: #c2e7b0;
     }
 
+    &--normal {
+      color: #999;
+      border-color: #999;
+    }
+
     &--warn {
       color: #F56C6C;
       background: #fef0f0;
@@ -220,7 +225,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 0;
+  margin-bottom: 20px;
 
   button {
     padding: 0 20px;
@@ -228,16 +233,42 @@
   }
 }
 
+.popBox-list:last-child {
+  margin-bottom: 0;
+}
+
+.popBox-list__bottom {
+  color: #6190E8;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+
+  .at-icon {
+    margin-right: 8px;
+  }
+}
+
 .popBox-list__text {
   text-align: left;
-  width: 250px;
+  flex: 1;
+  //width: 250px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
+.popBox-list__btn {
+  color: #999999;
+  font-size: 12Px;
+  margin-left: 25px;
+}
+
 .at-textarea__textarea {
   font-size: 14Px;
+}
+
+.at-modal__container {
+  top: 35%;
 }
 
 .type-list {
