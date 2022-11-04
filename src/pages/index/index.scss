@@ -134,33 +134,28 @@
 
 
 .panel-blade--even:nth-child(2n+1) {
-  background: #fef6e0;
+  background: #ffffff;
 }
 
 .panel-blade--even:nth-child(2n) {
-  background: #FFCCCC;
-}
-
-.panel-blade--odd:nth-child(5n+1) {
-  background: #ffffff;
-}
-
-.panel-blade--odd:nth-child(5n+2) {
-  background: #F6E9E6;
-}
-
-.panel-blade--odd:nth-child(5n+3) {
-  background: #ffffff;
-}
-
-.panel-blade--odd:nth-child(5n+4) {
   background: #fef6e0;
 }
 
-.panel-blade--odd:nth-child(5n+5) {
-  background: #FFCCCC;
+.panel-blade--odd:nth-child(3n+1) {
+  background: #ffffff;
 }
 
+.panel-blade--odd:nth-child(3n+2) {
+  background: #fbe5d0;
+}
+
+.panel-blade--odd:nth-child(3n+3) {
+  background: #fef6e0;
+}
+
+.panel-blade--7:nth-child(7) {
+  background: #fbe5d0;
+}
 
 .pointer-trans {
   transition: transform 3s cubic-bezier(.2, .93, .43, 1);

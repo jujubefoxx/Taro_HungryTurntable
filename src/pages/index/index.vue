@@ -10,7 +10,7 @@
       <view class="panel">
         <view class="panel-content">
           <view v-for="(food,index) in activeFoodList" :key="index"
-                :class="!isOddList?'panel-blade--even':'panel-blade--odd'"
+                :class="[!isOddList?'panel-blade--even':`panel-blade--odd`,`panel-blade--${activeFoodList.length}`]"
                 :style="`width:${sectorWidth}px;transform: rotate(${lightReg * index}deg);`"
                 class="panel-blade"
           >
@@ -81,7 +81,7 @@
         @tap="showEdit = true"
       >
         <view class="at-icon at-icon-settings"/>
-        编辑一下转盘
+        定制我的转盘
       </button>
       <button
         class="button--primary"
@@ -208,7 +208,7 @@ export default {
       dialogVisible: false,
       resetState: false,
       foodTypeList: {
-        all: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭"],
+        all: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
         drink: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
         fit: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
         friend: ["北京烤鸭", "烧鸡", "快餐", "麻辣烫", "炒饭", "面", "寿司", "烤肉", "火锅", "饺子"],
@@ -219,14 +219,14 @@ export default {
       },
       activeType: 'all',
       typeList: [
-        {title: '啥都想吃', alias: 'all'},
+        {title: '啥都可以', alias: 'all'},
         {title: '想喝点啥', alias: 'drink'},
         {title: '减肥吃啥', alias: 'fit'},
         {title: '聚餐吃啥', alias: 'friend'},
         {title: '吃点甜的', alias: 'sweet'},
         {title: '外卖快餐', alias: 'quick'},
         {title: '自己煮饭', alias: 'self'},
-        {title: '来点零食', alias: 'snacks'}
+        {title: '整点夜宵', alias: 'snacks'}
       ],
       typeRandomList: {
         all: ['北京烤鸭', '泰餐', '寿司', '烧鸡', '盖浇饭', '砂锅', '大排档', '米线', '满汉全席', '西餐', '麻辣烫', '关东煮', '自助餐', '炒面', '快餐', '水果', '西北风', '馄饨', '火锅', '烧烤', '泡面', '速冻水饺', '日本料理', '涮羊肉', '拉面', '肯德基', '面包', '扬州炒饭', '酸菜鱼', '茶餐厅', '海底捞', '咖啡', '比萨', '麦当劳', '兰州拉面', '沙县小吃', '烤鱼', '海鲜', '铁板烧', '韩国料理', '粥', '快餐', '东南亚菜', '甜点', '农家菜', '川菜', '粤菜', '湘菜', '竹笋烤肉'],
@@ -236,7 +236,7 @@ export default {
         sweet: ['绿豆沙', '豆乳盒子', '黑森林蛋糕', '提拉米苏', '半熟芝士', '蛋糕卷', '爆米花', '马卡龙', '绿豆糕', '水果蛋糕', '紫薯牛奶', '麻薯', '钵仔糕', '蛋挞', '曲奇饼', '可颂', '炸牛奶', '奶油面包', '菠萝包', '蛋黄酥', '麦芬', '戚风蛋糕', '小熊饼干', '糖水', '雪梅娘', '泡芙', '乳酪蛋糕', '舒芙蕾', '纸杯蛋糕'],
         quick: ['烧鹅饭', '烧鸭饭', '炒米粉', '盖浇饭', '蒸饺', '泡面', '酸菜鱼', '食堂', '鸡腿饭', '猪耳朵饭', '拉面', '炒面', '炒河粉', '关东煮', '炒饭', '鱼香肉丝饭', '酸辣土豆丝饭', '青椒炒肉饭', '肠粉', '排骨米饭', '麻辣烫', '冒菜', '煎饺', '煎饼', '包子', '牛肉面', '杂酱面'],
         self: ['西兰花炒虾仁', '蒜蓉金针菇', '鱼香肉丝', '尖椒肉丝', '红烧牛肉土豆', '手撕包菜', '上汤娃娃菜', '肉末嫩豆腐', '酿豆腐', '可乐鸡翅', '葱油鸡', '黄焖鸡', '烧腐竹', '鱼香茄子', '糖醋排骨', '油焖大虾', '照烧鸡腿', '日本豆腐', '酸辣土豆丝', '炖牛腩', '虾仁滑蛋', '蒜蓉虾', '咕噜肉', '手撕鸡', '酸汤肥牛', '香辣炒花甲', '辣子鸡'],
-        snacks: ['薯片', '蟹柳', '巧克力', '饼干', '脆骨肠', '蛋黄酥', '辣条', '水果干', '冰淇淋', '糖果', '果冻', 'qq糖', '牛肉脯', '开心果', '牛肉干', '葡萄干', '淀粉肠', '黑椒肠'],
+        snacks: ['炒米粉', '炒面', '炒河粉', '汤面', '糖水', '烧烤', '炒饭', '粥', '包子', '豆浆', '水果', '汤面', '饺子', '馄饨', '凉拌'],
       },
       onRotation: false, // 记录当前是否正在旋转，如果正在旋转，就不能继续点击了
       result: '点击中间按钮看看今天吃啥',//结果文案
@@ -270,7 +270,6 @@ export default {
     }
   },
   created() {
-    return;
     const list = Taro.getStorageSync('typeRandomList');
     const foodList = Taro.getStorageSync(this.activeType)
 
