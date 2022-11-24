@@ -195,7 +195,7 @@ import {
   AtButton,
   AtIcon
 } from 'taro-ui-vue'
-import TabBar from "../../components/TabBar/TabBar";
+import textFilter from '../../apis/textFilter'
 
 export default {
   components: {
@@ -358,21 +358,33 @@ export default {
     },
     //保存随机食物列表
     saveRandomList() {
-      this.dialogVisible = false;
-      this.randomList = this.randomListText.split(' ')
-      this.typeRandomList[this.activeType] = this.randomList;
-
-      Taro.setStorage({
-        key: "typeRandomList",
-        data: this.typeRandomList,
-        success() {
-          Taro.getStorage({
-            key: "typeRandomList",
-            success(res) {
-              console.log(res.data)
-            }
-          })
+      let textAuth = true;// 是否允许使用该文本
+      textFilter(this.randomListText).then((res) => {
+        if (res.conclusionType !== 1) {
+          Taro.hideLoading();
+          textAuth = false;
+          Taro.showToast({title: `有不合规的内容哦，请检查后再进行提交`, icon: 'none'})
         }
+      }).finally(() => {
+        if (!textAuth) return;
+        Taro.hideLoading();
+
+        this.dialogVisible = false;
+        this.randomList = this.randomListText.split(' ')
+        this.typeRandomList[this.activeType] = this.randomList;
+
+        Taro.setStorage({
+          key: "typeRandomList",
+          data: this.typeRandomList,
+          success() {
+            Taro.getStorage({
+              key: "typeRandomList",
+              success(res) {
+                console.log(res.data)
+              }
+            })
+          }
+        })
       })
     },
     //手动随机食物配置
@@ -476,14 +488,25 @@ export default {
           const {content, confirm, cancel} = res;
           if (confirm) {
             if (content) {
-              Vue.set(_this.foodTypeList[activeType], index, content) //更新新的值
-              Taro.setStorageSync(activeType, _this.foodTypeList[activeType])
-              Taro.showToast({title: `已修改为：${content}`, icon: 'none'})
-              const isResult = foodTypeList[activeType][index] === nextStatus.food;//修改的食物是否为当前结果的食物
-              if (!nextStatus.deg || !isResult) return;//修改结果中的食物
-              //获取结果位置的食物
-              nextStatus.food = content;
-              _this.result = `就决定是你了！${nextStatus.food}`;
+              let textAuth = true;// 是否允许使用该文本
+              textFilter(content).then((res) => {
+                if (res.conclusionType !== 1) {
+                  Taro.hideLoading();
+                  textAuth = false;
+                  Taro.showToast({title: `内容不合规，换一个词试试吧`, icon: 'none'})
+                }
+              }).finally(() => {
+                if (!textAuth) return;
+                Taro.hideLoading();
+                Vue.set(_this.foodTypeList[activeType], index, content) //更新新的值
+                Taro.setStorageSync(activeType, _this.foodTypeList[activeType])
+                Taro.showToast({title: `已修改为：${content}`, icon: 'none'})
+                const isResult = foodTypeList[activeType][index] === nextStatus.food;//修改的食物是否为当前结果的食物
+                if (!nextStatus.deg || !isResult) return;//修改结果中的食物
+                //获取结果位置的食物
+                nextStatus.food = content;
+                _this.result = `就决定是你了！${nextStatus.food}`;
+              })
             } else {
               Taro.showToast({title: '内容不能为空', icon: 'none'})
             }
@@ -514,13 +537,25 @@ export default {
           const {content, confirm} = res;
           if (confirm) {
             if (content) {
-              foodTypeList[activeType].push(content);
-              // Vue.set(_this.foodTypeList, activeType, '') //更新新的值
-              Taro.setStorageSync(activeType, _this.foodTypeList[activeType])
-              Taro.showToast({title: `已添加${content}`, icon: 'none'})
-              if (nextStatus.deg) {
-                _this.resetPointer();
-              }
+              let textAuth = true;
+              textFilter(content).then((res) => {
+                if (res.conclusionType !== 1) {
+                  Taro.hideLoading();
+                  textAuth = false;
+                  Taro.showToast({title: `内容不合规，换一个词试试吧`, icon: 'none'})
+                }
+              }).finally(() => {
+                if (!textAuth) return;
+                Taro.hideLoading();
+
+                foodTypeList[activeType].push(content);
+                // Vue.set(_this.foodTypeList, activeType, '') //更新新的值
+                Taro.setStorageSync(activeType, _this.foodTypeList[activeType])
+                Taro.showToast({title: `已添加${content}`, icon: 'none'})
+                if (nextStatus.deg) {
+                  _this.resetPointer();
+                }
+              })
             } else {
               Taro.showToast({title: '内容不能为空', icon: 'none'})
             }
