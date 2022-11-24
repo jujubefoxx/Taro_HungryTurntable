@@ -108,6 +108,7 @@
       意见建议或查看源码
     </navigator>
     <AtModal
+      :close-on-click-overlay="false"
       :is-opened="showEdit"
       :on-close="endEdit"
     >
@@ -151,8 +152,8 @@
       </AtModalAction>
     </AtModal>
     <AtModal
-      v-if="dialogVisible"
-      :is-opened="true"
+      :close-on-click-overlay="false"
+      :is-opened="dialogVisible"
       :on-close="endEdit"
     >
       <AtModalHeader>随机配置</AtModalHeader>
