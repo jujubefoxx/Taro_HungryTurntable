@@ -152,6 +152,7 @@
       </AtModalAction>
     </AtModal>
     <AtModal
+      v-if="dialogVisible"
       :close-on-click-overlay="false"
       :is-opened="dialogVisible"
       :on-close="endEdit"
