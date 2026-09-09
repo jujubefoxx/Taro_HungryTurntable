@@ -44,6 +44,7 @@ export function Wheel({ foods, rotation, spinning, reducedMotion, onSpin, onFood
   return <View className={`wheel-stage ${spinning ? 'is-spinning' : ''}`}>
     <Canvas type='2d' id={canvasId} canvasId={canvasId} className='render-canvas' />
     <View className='wheel-pointer'><Icon name='chevron-down' size={32} /></View>
+    <View className='wheel-viewport'>
     <View className={`wheel-disc ${generic ? 'generic-wheel' : ''}`} style={{ transform: `rotate(${rotation}deg)`, transition: motion }}>
       {backdrop && <Image src={backdrop} className='wheel-canvas' mode='scaleToFill' />}
       {!ready && <Text className='wheel-loading'>正在摆盘…</Text>}
@@ -55,6 +56,7 @@ export function Wheel({ foods, rotation, spinning, reducedMotion, onSpin, onFood
           <View key={arrangementKey} className='wheel-food-upright wheel-option-enter' style={{ animationDelay: `${index * 18}ms` }}><View className='wheel-art-slot' style={{ width: Taro.pxTransform(layout.artSize), height: Taro.pxTransform(layout.artSize) }}>{generic ? <View className='idea-icon'><Icon name='bulb' /></View> : <FoodImage food={food} />}</View><View className='wheel-label' style={{ fontSize: Taro.pxTransform(layout.fontSize), height: Taro.pxTransform(layout.labelHeight) }}>{lines.map((line, i) => <Text key={i} className='wheel-label-line' style={{ lineHeight: Taro.pxTransform(layout.lineHeight) }}>{line}</Text>)}</View></View>
         </Button>
       })}
+    </View>
     </View>
     <Button className={`wheel-center ${generic ? 'wheel-center-idea' : ''} ${spinning && !reducedMotion ? 'is-cheering' : ''}`} onClick={onSpin} disabled={(spinning || !ready) || undefined} ariaLabel={!ready ? '正在准备转盘' : spinning ? '正在转动' : generic ? '开始转盘，帮我选一个' : '开始转盘，戳我开饭'}>
       <View className='wheel-center-art'>{generic ? <View className='wheel-dice-badge'><View className='wheel-lucky-dice'>{['top-left', 'top-right', 'middle', 'bottom-left', 'bottom-right'].map(position => <View key={position} className={`wheel-dice-pip ${position}`} />)}</View><View className='wheel-center-spark spark-left' /><View className='wheel-center-spark spark-right' /></View> : <View className='meal-bell'><View className='meal-bell-knob' /><View className='meal-bell-dome' /><View className='meal-bell-base' /><View className='wheel-center-spark spark-left' /><View className='wheel-center-spark spark-right' /></View>}</View>

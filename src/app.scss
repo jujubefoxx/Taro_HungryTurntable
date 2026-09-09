@@ -108,6 +108,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .page .scene-option { width: 100%; min-height: 120px; justify-content: flex-start; margin: 0; }
 .scene-option > text { min-width: 0; }
 .wheel-stage { position: relative; width: 100%; aspect-ratio: 1; padding-bottom: 100%; height: 0; margin-top: 20px; }
+// 仅裁剪旋转盘面，避免斜角外框撑宽页面；指针、中心按钮和离屏画布不受影响。
+.wheel-viewport { position: absolute; inset: 0; overflow: hidden; border-radius: 50%; }
 .wheel-disc { box-sizing: border-box; position: absolute; inset: 0; width: 100%; height: 100%; border: 6px solid $ink; border-radius: 50%; overflow: hidden; background: #fff0c9; transform-origin: 50% 50%; }
 .wheel-canvas { width: 100%; height: 100%; position: absolute; left: 0; top: 0; }
 .render-canvas { position: fixed; left: -2000px; top: 0; width: 512px; height: 512px; pointer-events: none; }
@@ -297,11 +299,33 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .cyber-disclaimer { display: flex; align-items: flex-start; gap: 12px; margin: 25px 0; font-size: 23px; line-height: 1.65; color: $muted; }
 .food-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 26px; }
 .food-picker > button { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px; border: 2px solid $line; border-radius: 20px; }
+.food-picker .food-art-burger,
+.food-picker .food-art-chicken,
+.food-picker .food-art-coffee,
+.food-picker .food-art-tart { transform: translateY(7px); }
+.food-picker .food-art-matcha,
+.food-picker .food-art-pizza,
+.food-picker .food-art-shrimp,
+.food-picker .food-art-vegetables { transform: translateY(5px); }
+.food-picker .food-art-bun,
+.food-picker .food-art-hotpot { transform: translateY(11px); }
+.food-picker .food-art-pastry,
+.food-picker .food-art-sushi { transform: translateY(12px); }
+.food-picker .food-art-dumplings { transform: translateY(17px); }
+.food-picker .food-art-fish { transform: translateY(19px); }
+.food-picker .food-art-grill,
+.food-picker .food-art-noodles { transform: translateY(4px); }
+.food-picker .food-art-rice { transform: translateY(6px); }
+.food-picker .food-art-salad { transform: translateY(8px); }
+.food-picker .food-art-sandwich { transform: translateY(3px); }
+.food-picker .food-art-tea { transform: translateY(13px); }
 .food-picker text { font-size: 23px; word-break: break-word; }
 .about-hero { text-align: center; margin: 18px 0 44px; }
 .about-hero > image, .about-hero > taro-image-core { height: 220px; width: 220px; }
 .about-hero .page-title { font-size: 43px; margin: 18px 0 10px; }
 .settings-list { border: 2px solid $line; border-radius: 28px; overflow: hidden; margin-bottom: 26px; background: #fffdf7; }
+.settings-sections { display: flex; flex-direction: column; gap: 28px; margin-bottom: 12px; }
+.settings-sections > .settings-list, .page .settings-sections > .support-entry { margin: 0; }
 .setting-row { display: flex; align-items: center; gap: 18px; padding: 26px 20px; }
 .setting-row + .setting-row, .setting-link + .setting-link { border-top: 2px solid $line; }
 .setting-copy { flex: 1; min-width: 0; }

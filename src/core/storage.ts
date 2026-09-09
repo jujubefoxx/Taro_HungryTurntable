@@ -22,12 +22,12 @@ function readFood(value: unknown): Food | undefined {
   return food
 }
 function refreshPresetNutrition(food: Food): Food {
-  if (food.id !== `preset:${food.name}` || food.nutritionEdited) return food
+  if (food.nutritionEdited) return food
   const current = food.nutrition
   const preset = presetFood(food.name).nutrition
   if (!preset) return food
   if (!current) return { ...food, nutrition: preset }
-  // 只补旧版、未编辑过的内置估值；不按菜名覆盖用户包装数据，也不修改开饭历史快照。
+  // 只补未编辑过的内置估值和 1.0 迁移项；不覆盖用户包装数据，也不修改开饭历史快照。
   if (current.kind === 'estimate' && current.source === '内置份量假设的粗略估算，非实测或特定品牌数据' && current.kcal === preset.kcal && current.kcalMax === preset.kcalMax && current.serving === preset.serving) {
     return { ...food, nutrition: { ...preset, ...Object.fromEntries((['protein', 'carbs', 'fat'] as const).filter(key => current[key] !== undefined).map(key => [key, current[key]])) } }
   }

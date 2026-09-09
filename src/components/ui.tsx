@@ -19,7 +19,8 @@ export function IconButton({ name, label, onClick, disabled }: { name: string; l
   return <Button className='icon-button' ariaLabel={label} onClick={onClick} disabled={disabled || undefined}><Icon name={name} /></Button>
 }
 export function FoodImage({ food, className = '' }: { food: Pick<Food, 'art' | 'name' | 'artLocked'>; className?: string }) {
-  return <Image className={`food-image ${className}`} src={asset(`${displayArt(food)}.png`)} mode='aspectFit' ariaLabel={food.name} />
+  const art = displayArt(food)
+  return <Image className={`food-image food-art-${art} ${className}`} src={asset(`${art}.png`)} mode='aspectFit' ariaLabel={food.name} />
 }
 export function Page({ children, title, home = false }: PropsWithChildren<{ title?: string; home?: boolean }>) {
   const { storageNotice, state } = useApp()
