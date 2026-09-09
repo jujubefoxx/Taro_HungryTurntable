@@ -18,7 +18,7 @@ export default function SettingsPage() {
   const { state, update } = useApp()
   const [reward, setReward] = useState<RewardPurpose>()
   return <Page title='设置'>
-    <View className='about-hero'><Image src={asset('mascot.png')} mode='aspectFit' /><Text className='page-title'>吃饭这件事，可别忘了。</Text><Text className='muted'>今天吃啥 · 2.0.6</Text></View>
+    <View className='about-hero'><Image src={asset('mascot.png')} mode='aspectFit' /><Text className='page-title'>吃饭这件事，可别忘了。</Text><Text className='muted'>今天吃啥 · 2.0.7</Text></View>
     <View className='settings-sections'>
       <View className='settings-list'>{preferences.map(item => <View key={item.key} className='setting-row'><Icon name={item.icon} /><View className='setting-copy'><Text>{item.title}</Text><Text className='fine-print'>{item.desc}</Text></View><Switch ariaLabel={item.title} color='#f5663d' checked={state.settings[item.key]} onChange={e => update(s => ({ ...s, settings: { ...s.settings, [item.key]: e.detail.value } }))} /></View>)}</View>
       <SupportEntry />

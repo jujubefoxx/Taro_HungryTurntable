@@ -53,7 +53,7 @@ button::after { border: 0; }
 .page .add-food { background: $orange; }
 .page .food-open { padding: 8px 0; }
 .page .setting-link { padding: 26px 20px; }
-.page .food-picker > button { padding: 10px; }
+.page .food-picker > .app-button { padding: 10px; }
 button[disabled]:not([disabled='false']) { opacity: .45; color: inherit; background: transparent; }
 button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #bf4923; outline-offset: 3px; }
 .page { box-sizing: border-box; width: 100%; min-width: 0; min-height: 100vh; max-width: 750px; margin: 0 auto; padding: 0 34px calc(36px + env(safe-area-inset-bottom)); background: $paper; color: $ink; }
@@ -298,8 +298,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .progress-dot.filled { background: $orange; }
 .cyber-disclaimer { display: flex; align-items: flex-start; gap: 12px; margin: 25px 0; font-size: 23px; line-height: 1.65; color: $muted; }
 .food-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 26px; }
-.food-picker > button { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; padding: 10px; border: 2px solid $line; border-radius: 20px; }
-.food-picker-art { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 116px; height: 116px; }
+.food-picker > .app-button { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; padding: 10px; border: 2px solid $line; border-radius: 20px; }
+.food-picker-art { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 116px; height: 116px; margin: 0 auto; }
 .food-picker-label { display: block; width: 100%; min-height: 64px; font-size: 23px; line-height: 1.4; text-align: center; word-break: break-word; }
 .about-hero { text-align: center; margin: 18px 0 44px; }
 .about-hero > image, .about-hero > taro-image-core { height: 220px; width: 220px; }
