@@ -1,9 +1,6 @@
 {
-  "miniprogramRoot": "./",
-  "projectname": "HungryTurntable",
+  "miniprogramRoot": "dist/tt/",
+  "projectname": "今天吃啥",
   "appid": "touristappid",
-  "setting": {
-    "es6": false,
-    "minified": false
-  }
+  "setting": { "es6": false, "minified": true }
 }

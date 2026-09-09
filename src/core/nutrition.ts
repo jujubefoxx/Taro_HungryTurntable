@@ -1,0 +1,124 @@
+import { Nutrition } from './model'
+
+// 菜名不能唯一确定配方。下列区间是所列份量的产品侧粗估，不是餐厅实测或营养数据库记录。
+// 仅精确匹配内置名称；自定义食物不按关键词猜测热量。
+interface MealEstimate { names: string[]; min: number; max: number; serving: string; note: string }
+const estimates: MealEstimate[] = [
+  { names: ['火锅', '铜锅涮肉'], min: 500, max: 1200, serving: '单人食材约 500 克', note: '荤素混合，不含主食、饮料；肉类与蘸料差异很大。' },
+  { names: ['寿司'], min: 300, max: 550, serving: '约 6 块（250 克）', note: '饭量、鱼类、沙拉酱和油炸配料会改变数值。' },
+  { names: ['汉堡'], min: 350, max: 650, serving: '1 个约 200 克', note: '不含薯条、饮料；肉饼与酱料依配方不同。' },
+  { names: ['周末限定超辣芝士鸡腿堡'], min: 500, max: 850, serving: '1 个约 250 克', note: '按炸鸡腿、芝士、面包、酱料粗估，不含配餐。' },
+  { names: ['拉面', '牛肉面', '番茄鸡蛋面'], min: 400, max: 750, serving: '1 碗约 500 克（含汤）', note: '面量、肉量、汤底与加油量影响较大。' },
+  { names: ['披萨'], min: 400, max: 650, serving: '约 2 块（200 克）', note: '饼底厚度、芝士与肉类不同；不是一整个披萨。' },
+  { names: ['烤肉', '烧烤'], min: 400, max: 850, serving: '可食部约 250 克', note: '按荤素混合粗估，不含酒水与主食。' },
+  { names: ['饺子', '蒸饺'], min: 350, max: 600, serving: '约 10 个（250 克）', note: '按非油炸肉菜馅估算，蘸料另计。' },
+  { names: ['沙拉', '鸡肉沙拉'], min: 200, max: 450, serving: '1 份约 300 克', note: '按蔬菜、少量鸡肉和酱汁估算；大量沙拉酱会超出区间。' },
+  { names: ['麻辣烫'], min: 400, max: 850, serving: '1 碗约 500 克', note: '按蔬菜、豆制品、肉和少量粉面粗估，不含额外饮品。' },
+  { names: ['蛋炒饭', '扬州炒饭', '楼下阿姨家的炒粉', '炒米粉'], min: 500, max: 850, serving: '1 份约 350 克', note: '主食、鸡蛋、少量肉菜与炒制用油的份量假设。' },
+  { names: ['馄饨'], min: 250, max: 450, serving: '约 10 个带汤（400 克）', note: '馅料比例、个头和汤底影响实际热量。' },
+  { names: ['番茄巴沙鱼', '清蒸鱼'], min: 200, max: 400, serving: '鱼肉可食部约 200 克', note: '含少量调味油，不含米饭；非整鱼含骨重量。' },
+  { names: ['照烧鸡腿饭', '牛肉盖饭', '咖喱鸡肉饭', '酸辣土豆丝盖饭'], min: 550, max: 850, serving: '1 份约 400 克', note: '按米饭配肉菜和酱汁估算，不含其他配餐。' },
+  { names: ['红烧肉饭', '煲仔饭'], min: 650, max: 1000, serving: '1 份约 400 克', note: '肥瘦比例、腊味和锅底用油会带来明显差异。' },
+  { names: ['西兰花炒虾仁'], min: 200, max: 400, serving: '1 份约 300 克', note: '按虾仁、蔬菜和少量炒制用油估算，不含米饭。' },
+  { names: ['小笼包', '包子'], min: 300, max: 550, serving: '合计约 200 克', note: '以肉馅蒸包粗估，个头不统一，以总重量比较。' },
+  { names: ['酸菜鱼', '烤鱼', '猪肚鸡'], min: 350, max: 750, serving: '单人可食部约 350 克', note: '不是整锅；配菜、油与是否喝汤影响很大，不含主食。' },
+  { names: ['葱油拌面'], min: 450, max: 750, serving: '1 碗约 300 克', note: '按熟面、葱油和酱汁估算。' },
+  { names: ['虾仁滑蛋'], min: 250, max: 450, serving: '1 份约 250 克', note: '按鸡蛋、虾仁和炒制用油估算，不含米饭。' },
+  { names: ['烤鸡翅'], min: 250, max: 450, serving: '可食部约 150 克', note: '不含骨头；鸡皮、糖汁和烤制用油影响数值。' },
+  { names: ['蔬菜粥'], min: 150, max: 300, serving: '1 碗约 350 克', note: '以米和蔬菜为主，不含额外肉松、油条等配料。' },
+  { names: ['鸡蛋羹', '番茄鸡蛋汤'], min: 100, max: 220, serving: '1 碗约 250 克', note: '按 1～2 个鸡蛋配水或蔬菜及少量油估算。' },
+  { names: ['肠粉'], min: 250, max: 450, serving: '1 份约 250 克', note: '米浆配少量蛋肉馅和酱料的份量假设。' },
+  { names: ['手撕包菜'], min: 150, max: 350, serving: '1 份约 250 克', note: '主要差异在炒制用油，未按清水煮菜计算。' },
+  { names: ['三明治'], min: 250, max: 500, serving: '1 份约 180 克', note: '按面包、蛋肉、蔬菜和酱料估算。' },
+  { names: ['小蛋糕', '草莓蛋糕', '提拉米苏', '芝士蛋糕'], min: 250, max: 450, serving: '1 块约 100 克', note: '奶油、奶酪、糖和蛋糕体配比依做法不同。' },
+  { names: ['绿豆沙', '红豆甜汤'], min: 150, max: 300, serving: '1 碗约 250 克', note: '按常规加糖甜汤估算，不含椰奶或冰淇淋。' },
+  { names: ['豆浆'], min: 70, max: 160, serving: '1 杯约 250 毫升', note: '豆浆浓度和是否加糖不同，优先查看包装。' },
+  { names: ['玉米'], min: 100, max: 180, serving: '可食部约 150 克', note: '按蒸煮玉米粒估算，不含玉米芯或黄油。' },
+  { names: ['黑糖珍珠牛奶'], min: 300, max: 550, serving: '1 杯约 500 毫升', note: '按牛奶、糖浆与珍珠粗估，不能代表具体品牌。' },
+  { names: ['茉莉花茶', '乌龙茶'], min: 0, max: 5, serving: '无糖纯茶约 300 毫升', note: '仅适用于茶叶冲泡，不含糖、奶或小料。' },
+  { names: ['冰美式'], min: 0, max: 15, serving: '无糖黑咖啡约 300 毫升', note: '不含糖、奶和糖浆。' },
+  { names: ['拿铁', '抹茶牛奶', '热可可'], min: 120, max: 280, serving: '1 杯约 300 毫升', note: '按奶基底加咖啡、抹茶或可可估算，糖量不同。' },
+  { names: ['纯牛奶'], min: 100, max: 170, serving: '1 杯约 250 毫升', note: '涵盖常见脱脂至全脂奶，优先使用包装标示。' },
+  { names: ['柠檬水'], min: 0, max: 10, serving: '无糖约 300 毫升', note: '仅柠檬片泡水；添加糖、蜂蜜后不适用。' },
+  { names: ['水果茶'], min: 80, max: 300, serving: '1 杯约 500 毫升', note: '水果和糖浆配比差异大，不含额外小料。' },
+  { names: ['西瓜汁'], min: 80, max: 150, serving: '1 杯约 300 毫升', note: '按鲜榨原汁估算，加糖需额外计算。' },
+  { names: ['蛋挞'], min: 180, max: 280, serving: '1 个约 60 克', note: '挞皮、奶油和蛋液比例不同。' },
+  { names: ['布丁', '冰淇淋'], min: 100, max: 250, serving: '约 100 克', note: '奶、糖和脂肪比例依产品不同。' },
+  { names: ['麻薯', '泡芙'], min: 180, max: 320, serving: '合计约 80 克', note: '按有馅小甜点估算，不同馅料差异明显。' },
+  { names: ['凉拌黄瓜'], min: 50, max: 160, serving: '1 份约 200 克', note: '按黄瓜与少量拌油估算，不含花生等配料。' },
+  { names: ['泰式咖喱'], min: 350, max: 700, serving: '1 份约 300 克', note: '按肉菜、咖喱及椰奶估算，不含米饭。' },
+  { names: ['小龙虾'], min: 200, max: 450, serving: '虾肉可食部约 200 克', note: '不含虾壳；按带少量调味油估算，不是整盆重量。' },
+  { names: ['水果沙拉'], min: 100, max: 300, serving: '1 份约 250 克', note: '按混合水果及少量沙拉酱估算。' }
+]
+
+// 每组按上面的可食份量设定一种代表性配方，单位为克；不是这些菜名的实测均值。
+// 三大营养素是该代表配方的粗估单值，不能理解为覆盖所有做法的精确值。
+// 用 4P + 4C + 9F 与热量区间做一致性检查，不能从热量反推营养素。
+// 能量检查方法：https://www.nal.usda.gov/programs/fnic （不是下面菜品数值的来源）。
+type MacroPortion = { protein: number; carbs: number; fat: number }
+const macros: Record<string, MacroPortion> = {
+  火锅: { protein: 45, carbs: 40, fat: 50 },
+  寿司: { protein: 16, carbs: 70, fat: 10 },
+  汉堡: { protein: 24, carbs: 45, fat: 24 },
+  周末限定超辣芝士鸡腿堡: { protein: 30, carbs: 60, fat: 35 },
+  拉面: { protein: 24, carbs: 80, fat: 18 },
+  披萨: { protein: 22, carbs: 60, fat: 22 },
+  烤肉: { protein: 45, carbs: 18, fat: 40 },
+  饺子: { protein: 20, carbs: 65, fat: 16 },
+  沙拉: { protein: 25, carbs: 20, fat: 16 },
+  麻辣烫: { protein: 28, carbs: 65, fat: 28 },
+  蛋炒饭: { protein: 18, carbs: 100, fat: 22 },
+  馄饨: { protein: 16, carbs: 45, fat: 12 },
+  番茄巴沙鱼: { protein: 34, carbs: 10, fat: 13 },
+  照烧鸡腿饭: { protein: 30, carbs: 95, fat: 22 },
+  红烧肉饭: { protein: 25, carbs: 100, fat: 38 },
+  西兰花炒虾仁: { protein: 30, carbs: 15, fat: 14 },
+  小笼包: { protein: 18, carbs: 55, fat: 16 },
+  酸菜鱼: { protein: 40, carbs: 20, fat: 33 },
+  葱油拌面: { protein: 13, carbs: 90, fat: 22 },
+  虾仁滑蛋: { protein: 30, carbs: 6, fat: 22 },
+  烤鸡翅: { protein: 30, carbs: 10, fat: 22 },
+  蔬菜粥: { protein: 5, carbs: 42, fat: 4 },
+  鸡蛋羹: { protein: 12, carbs: 4, fat: 11 },
+  肠粉: { protein: 10, carbs: 55, fat: 10 },
+  手撕包菜: { protein: 4, carbs: 12, fat: 20 },
+  三明治: { protein: 18, carbs: 40, fat: 16 },
+  小蛋糕: { protein: 5, carbs: 40, fat: 19 },
+  绿豆沙: { protein: 6, carbs: 45, fat: 1 },
+  豆浆: { protein: 7, carbs: 12, fat: 4 },
+  玉米: { protein: 5, carbs: 27, fat: 2 },
+  黑糖珍珠牛奶: { protein: 10, carbs: 70, fat: 12 },
+  茉莉花茶: { protein: 0, carbs: 0.5, fat: 0 },
+  冰美式: { protein: 0.5, carbs: 1, fat: 0 },
+  拿铁: { protein: 9, carbs: 16, fat: 8 },
+  纯牛奶: { protein: 8, carbs: 12, fat: 7 },
+  柠檬水: { protein: 0, carbs: 1, fat: 0 },
+  水果茶: { protein: 0.5, carbs: 45, fat: 0 },
+  西瓜汁: { protein: 2, carbs: 25, fat: 0.5 },
+  蛋挞: { protein: 4, carbs: 25, fat: 13 },
+  布丁: { protein: 4, carbs: 25, fat: 6 },
+  麻薯: { protein: 3, carbs: 45, fat: 6 },
+  凉拌黄瓜: { protein: 2, carbs: 7, fat: 8 },
+  泰式咖喱: { protein: 28, carbs: 25, fat: 34 },
+  小龙虾: { protein: 36, carbs: 8, fat: 17 },
+  水果沙拉: { protein: 2, carbs: 38, fat: 5 }
+}
+// 同组热量范围相近，食材构成明显不同的菜品单独配置，不套用肉类饭或奶饮的比例。
+const macroOverrides: Record<string, MacroPortion> = {
+  酸辣土豆丝盖饭: { protein: 9, carbs: 118, fat: 22 },
+  番茄鸡蛋面: { protein: 18, carbs: 80, fat: 18 },
+  清蒸鱼: { protein: 40, carbs: 3, fat: 12 },
+  番茄鸡蛋汤: { protein: 9, carbs: 8, fat: 9 },
+  热可可: { protein: 8, carbs: 28, fat: 8 },
+  抹茶牛奶: { protein: 8, carbs: 24, fat: 8 },
+  冰淇淋: { protein: 3, carbs: 24, fat: 10 },
+  泡芙: { protein: 5, carbs: 25, fat: 16 },
+  芝士蛋糕: { protein: 6, carbs: 27, fat: 25 }
+}
+
+export function estimateNutrition(name: string): Nutrition | undefined {
+  const item = estimates.find(row => row.names.includes(name))
+  return item ? { kcal: item.min, kcalMax: item.max, serving: item.serving, ...macroOverrides[name] || macros[item.names[0]], kind: 'estimate', note: `${item.note} 三大营养素为这份假设配方的约值。`, source: '按常见配方及份量粗估，非实测或特定品牌数据', checkedAt: '2026-09-09' } : undefined
+}
+
+export function calorieText(n: Nutrition) { return n.kcalMax === undefined ? String(n.kcal) : `${n.kcal}～${n.kcalMax}` }

@@ -1,0 +1,17 @@
+All included eating sounds are derived from CC0 recordings:
+
+crunch.wav: "Crunchy bite", fvcalderan, 2025
+https://opengameart.org/content/crunchy-bite
+Recorded by the creator using their own voice.
+
+crunch-alt.wav and spoon.wav: "7 Eating Crunches", Tito / StarNinjas, 2021
+https://opengameart.org/content/7-eating-crunches
+
+sip.wav: "Liquid Bottle Drink Set", Iwan "qubodup" Gabovitch
+https://opengameart.org/content/liquid-bottle-drink-set
+
+License: Creative Commons CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Adaptations: trimmed, mono 22050 Hz PCM, short fades, slight pitch/speed changes,
+volume normalization and gentle low-pass filtering. No synthetic impact layer.

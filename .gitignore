@@ -1,6 +1,10 @@
-dist/
-deploy_versions/
-.temp/
-.rn_temp/
 node_modules/
+dist/
+.taro/
+.swc/
 .DS_Store
+.idea/
+*.log
+project.private.config.json
+.env.local
+.env.*.local

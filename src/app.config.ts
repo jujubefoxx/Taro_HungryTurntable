@@ -1,14 +1,5 @@
-export default {
-  pages: [
-    'pages/index/index',
-    'pages/menu/index',
-    'pages/menu/menuList',
-    'pages/menu/detail',
-    'pages/contact/index'],
-  window: {
-    backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: '今天吃啥',
-    navigationBarTextStyle: 'black'
-  }
-}
+export default defineAppConfig({
+  pages: ['pages/index/index', 'pages/library/index', 'pages/cyber/index', 'pages/settings/index', 'pages/history/index', 'pages/decide/index'],
+  window: { navigationStyle: 'custom', navigationBarTextStyle: 'black', backgroundColor: '#fffaf0', backgroundTextStyle: 'dark' },
+  lazyCodeLoading: 'requiredComponents'
+})
