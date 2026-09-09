@@ -298,28 +298,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .progress-dot.filled { background: $orange; }
 .cyber-disclaimer { display: flex; align-items: flex-start; gap: 12px; margin: 25px 0; font-size: 23px; line-height: 1.65; color: $muted; }
 .food-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 26px; }
-.food-picker > button { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px; border: 2px solid $line; border-radius: 20px; }
-.food-picker .food-art-burger,
-.food-picker .food-art-chicken,
-.food-picker .food-art-coffee,
-.food-picker .food-art-tart { transform: translateY(7px); }
-.food-picker .food-art-matcha,
-.food-picker .food-art-pizza,
-.food-picker .food-art-shrimp,
-.food-picker .food-art-vegetables { transform: translateY(5px); }
-.food-picker .food-art-bun,
-.food-picker .food-art-hotpot { transform: translateY(11px); }
-.food-picker .food-art-pastry,
-.food-picker .food-art-sushi { transform: translateY(12px); }
-.food-picker .food-art-dumplings { transform: translateY(17px); }
-.food-picker .food-art-fish { transform: translateY(19px); }
-.food-picker .food-art-grill,
-.food-picker .food-art-noodles { transform: translateY(4px); }
-.food-picker .food-art-rice { transform: translateY(6px); }
-.food-picker .food-art-salad { transform: translateY(8px); }
-.food-picker .food-art-sandwich { transform: translateY(3px); }
-.food-picker .food-art-tea { transform: translateY(13px); }
-.food-picker text { font-size: 23px; word-break: break-word; }
+.food-picker > button { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px; min-width: 0; padding: 10px; border: 2px solid $line; border-radius: 20px; }
+.food-picker-art { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 116px; height: 116px; }
+.food-picker-label { display: block; width: 100%; min-height: 64px; font-size: 23px; line-height: 1.4; text-align: center; word-break: break-word; }
 .about-hero { text-align: center; margin: 18px 0 44px; }
 .about-hero > image, .about-hero > taro-image-core { height: 220px; width: 220px; }
 .about-hero .page-title { font-size: 43px; margin: 18px 0 10px; }

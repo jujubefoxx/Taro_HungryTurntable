@@ -11,6 +11,13 @@ import { canvasImage, canvasSurface, Surface } from '../../platform/canvas'
 import { InlineAd, SupportEntry } from '../../components/Monetization'
 
 const TOTAL = 6
+const pickerArtOffset: Partial<Record<Food['art'], number>> = {
+  burger: 7, chicken: 7, coffee: 7, tart: 7,
+  matcha: 5, pizza: 5, shrimp: 5, vegetables: 5,
+  bun: 11, hotpot: 11, pastry: 12, sushi: 12,
+  dumplings: 17, fish: 19, grill: 4, noodles: 4,
+  rice: 6, salad: 8, sandwich: 3, tea: 13
+}
 export default function Cyber() {
   const { state, update } = useApp()
   const router = useRouter()
@@ -112,6 +119,9 @@ export default function Cyber() {
     <View className='home-links'><Button className="link-button" onClick={() => setChoosing(true)}><Icon name='refresh' /><Text>{presentation.drink ? '换一杯' : '换一个'}</Text></Button><Button className="link-button" onClick={back}><Icon name='arrow-back-up' /><Text>返回</Text></Button></View>
     <View className='cyber-disclaimer'><Icon name='heart' size={18} /><Text>仅供娱乐，不能代替真实饮食。饿了就好好吃饭。</Text></View>
     {finished && <><SupportEntry /><InlineAd /></>}
-    {choosing && <Sheet title='下一口，尝点什么？' onClose={() => setChoosing(false)}><View className='food-picker'>{pool.map(f => <Button key={f.id} onClick={() => reset(f)}><FoodImage food={f} /><Text>{f.name}</Text></Button>)}</View><Action secondary onClick={() => reset(sample(pool.filter(f => f.id !== food.id).length ? pool.filter(f => f.id !== food.id) : pool, 1)[0])}>随便来一个</Action></Sheet>}
+    {choosing && <Sheet title='下一口，尝点什么？' onClose={() => setChoosing(false)}><View className='food-picker'>{pool.map(f => {
+      const offset = pickerArtOffset[displayArt(f)] || 0
+      return <Button key={f.id} onClick={() => reset(f)}><View className='food-picker-art'><FoodImage food={f} style={offset ? { transform: `translateY(${Taro.pxTransform(offset)})` } : undefined} /></View><Text className='food-picker-label'>{f.name}</Text></Button>
+    })}</View><Action secondary onClick={() => reset(sample(pool.filter(f => f.id !== food.id).length ? pool.filter(f => f.id !== food.id) : pool, 1)[0])}>随便来一个</Action></Sheet>}
   </Page>
 }

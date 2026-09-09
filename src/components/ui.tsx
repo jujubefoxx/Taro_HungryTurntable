@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useRef, useState } from 'react'
+import { CSSProperties, PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { Image, ScrollView, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 import { Button } from './Button'
@@ -18,9 +18,9 @@ export function Action({ children, onClick, disabled, secondary = false, classNa
 export function IconButton({ name, label, onClick, disabled }: { name: string; label: string; onClick: () => void; disabled?: boolean }) {
   return <Button className='icon-button' ariaLabel={label} onClick={onClick} disabled={disabled || undefined}><Icon name={name} /></Button>
 }
-export function FoodImage({ food, className = '' }: { food: Pick<Food, 'art' | 'name' | 'artLocked'>; className?: string }) {
+export function FoodImage({ food, className = '', style }: { food: Pick<Food, 'art' | 'name' | 'artLocked'>; className?: string; style?: CSSProperties }) {
   const art = displayArt(food)
-  return <Image className={`food-image food-art-${art} ${className}`} src={asset(`${art}.png`)} mode='aspectFit' ariaLabel={food.name} />
+  return <Image className={`food-image food-art-${art} ${className}`} style={style} src={asset(`${art}.png`)} mode='aspectFit' ariaLabel={food.name} />
 }
 export function Page({ children, title, home = false }: PropsWithChildren<{ title?: string; home?: boolean }>) {
   const { storageNotice, state } = useApp()

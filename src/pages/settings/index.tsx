@@ -29,7 +29,7 @@ export default function SettingsPage() {
         <Button className='settings-secondary-link' onClick={() => setReward('feedback')}><Icon name='users' size={20} /><View><Text>反馈建议</Text><Text>看广告后反馈</Text></View></Button>
       </View>
     </View>
-    <View className='privacy-note'><Text className='section-title'>数据都存在哪？</Text><Text>食物、最近 30 条开饭记录、万事转盘和偏好保存在当前设备，不需要注册或登录。更换设备、清除应用数据或卸载后可能丢失。</Text><Text>插画是食物类别示意，不代表实际菜品。营养信息仅供参考；开饭记录代表你的选择，不是摄入记录。赛博食堂不记录实际摄入或“节省热量”。</Text></View>
+    <View className='privacy-note'><Text className='section-title'>数据都存在哪？</Text><Text>食物、最近 30 条开饭记录、万事转盘和偏好保存在当前设备，不需要注册或登录。更换设备、清除应用数据或卸载后可能丢失。</Text></View>
     <Text className='page-motto'>今天吃啥，不必想得那么复杂。</Text>
     <InlineAd video />
     {reward && <RewardSheet purpose={reward} onClose={() => setReward(undefined)} />}
