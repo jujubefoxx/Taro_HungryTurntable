@@ -333,6 +333,12 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .setting-copy .fine-print { margin-top: 6px; }
 .setting-link { display: flex; align-items: center; gap: 16px; width: 100%; padding: 26px 20px; font-size: 27px; text-align: left; }
 .setting-link > text { flex: 1; }
+.settings-secondary-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.page .settings-secondary-link { display: flex; align-items: center; gap: 12px; min-width: 0; width: 100%; padding: 18px; border: 2px solid $line; border-radius: 22px; --button-bg: #fffaf0; text-align: left; }
+.settings-secondary-link > view { min-width: 0; }
+.settings-secondary-link text { display: block; white-space: nowrap; }
+.settings-secondary-link text:first-child { font-size: 24px; font-weight: 700; }
+.settings-secondary-link text:last-child { margin-top: 4px; color: $muted; font-size: 19px; }
 .privacy-note { padding: 24px 8px; color: $muted; }
 .privacy-note > text { display: block; margin-bottom: 18px; font-size: 23px; line-height: 1.8; }
 .privacy-note .section-title { color: $ink; font-size: 27px; }
