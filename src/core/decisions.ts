@@ -1,6 +1,7 @@
 import { DecisionWheel, nameError, nameKey, normalizeName } from './model'
 
 export const DECISION_TEMPLATES = [
+  { title: '饭后干点啥？', options: ['听首歌', '散个步', '坐着放空', '看一集剧'] },
   { title: '周末去哪撒欢？', options: ['公园晒太阳', '逛一家小书店', '看场电影', '在家躺平'] },
   { title: '下一站，去旅行！', options: ['成都', '大理', '杭州', '青岛', '长沙', '厦门'] },
   { title: '明天先做哪件事？', options: ['整理房间', '读二十页书', '散步半小时', '完成一个小目标'] }

@@ -1,6 +1,7 @@
 import { AppState, SCENES, SceneId, Food, FOOD_ARTS, uniqueNames, artForName, validateWheel, Settings } from './model'
 import { initialState, presetFood } from './seeds'
 import { decisionError } from './decisions'
+import { contentFilterError } from './content-filter'
 
 export interface StoragePort { read(key: string): unknown; write(key: string, value: unknown): void }
 export const STORAGE_KEY = 'hungry-turntable:v2'
@@ -19,6 +20,7 @@ function readFood(value: unknown): Food | undefined {
     for (const key of ['protein', 'carbs', 'fat'] as const) if (typeof n[key] === 'number' && Number.isFinite(n[key]) && n[key] >= 0) food.nutrition[key] = n[key]
     if (typeof n.sourceUrl === 'string' && n.sourceUrl.startsWith('https://')) food.nutrition.sourceUrl = n.sourceUrl
   }
+  if (contentFilterError([food.name, food.nutrition?.serving || ''])) return
   return food
 }
 function refreshPresetNutrition(food: Food): Food {
@@ -51,9 +53,10 @@ export function hydrate(value: unknown): AppState | undefined {
   }
   if (SCENES.some(s => s.id === value.scene)) state.scene = value.scene as SceneId
   if (isObject(value.settings)) {
+    // 旧版 avoidRecent 曾默认开启，不代表用户同意；只恢复新开关记录的主动选择。
     for (const key of Object.keys(state.settings) as (keyof Settings)[]) if (typeof value.settings[key] === 'boolean') state.settings[key] = value.settings[key]
   }
-  if (isObject(value.lastMeal) && typeof value.lastMeal.name === 'string' && typeof value.lastMeal.date === 'string') state.lastMeal = { name: value.lastMeal.name, date: value.lastMeal.date }
+  if (isObject(value.lastMeal) && typeof value.lastMeal.name === 'string' && typeof value.lastMeal.date === 'string' && !contentFilterError([value.lastMeal.name])) state.lastMeal = { name: value.lastMeal.name, date: value.lastMeal.date }
   if (Array.isArray(value.mealHistory)) {
     const ids = new Set<string>()
     state.mealHistory = value.mealHistory.flatMap(raw => {
@@ -61,7 +64,7 @@ export function hydrate(value: unknown): AppState | undefined {
       const food = readFood(raw.food)
       if (!food) return []
       ids.add(raw.id)
-      return [{ id: raw.id, date: raw.date, food, scene: SCENES.some(s => s.id === raw.scene) ? raw.scene as SceneId : undefined, candidates: Array.isArray(raw.candidates) ? raw.candidates.filter((n): n is string => typeof n === 'string').slice(0, 10) : [], legacy: raw.legacy === true }]
+      return [{ id: raw.id, date: raw.date, food, scene: SCENES.some(s => s.id === raw.scene) ? raw.scene as SceneId : undefined, candidates: Array.isArray(raw.candidates) ? raw.candidates.filter((n): n is string => typeof n === 'string' && !contentFilterError([n])).slice(0, 10) : [], legacy: raw.legacy === true }]
     }).sort((a, b) => Date.parse(b.date) - Date.parse(a.date)).slice(0, 30)
   } else if (state.lastMeal && Number.isFinite(Date.parse(state.lastMeal.date))) {
     const { name, date } = state.lastMeal
@@ -70,7 +73,7 @@ export function hydrate(value: unknown): AppState | undefined {
   if (Array.isArray(value.decisionWheels)) {
     const ids = new Set<string>()
     const wheels = value.decisionWheels.flatMap(raw => {
-      if (!isObject(raw) || typeof raw.id !== 'string' || !raw.id || ids.has(raw.id) || typeof raw.title !== 'string' || !Array.isArray(raw.options) || !raw.options.every((n): n is string => typeof n === 'string') || decisionError(raw.title, raw.options)) return []
+      if (!isObject(raw) || typeof raw.id !== 'string' || !raw.id || ids.has(raw.id) || typeof raw.title !== 'string' || !Array.isArray(raw.options) || !raw.options.every((n): n is string => typeof n === 'string') || decisionError(raw.title, raw.options) || contentFilterError([raw.title, ...raw.options])) return []
       ids.add(raw.id)
       return [{ id: raw.id, title: raw.title, options: raw.options }]
     }).slice(0, 20)
@@ -94,13 +97,14 @@ export function loadState(port: StoragePort): { state: AppState; notice?: string
     for (const scene of SCENES) {
       const oldWheel = port.read(scene.id)
       const wheelNames = Array.isArray(oldWheel) ? uniqueNames(oldWheel) : []
+      const safeWheelNames = wheelNames.filter(name => !contentFilterError([name]))
       const rawPool = isObject(oldPools) ? oldPools[scene.id] : undefined
       const poolNames = Array.isArray(rawPool) ? uniqueNames(rawPool) : []
       if (!wheelNames.length && !poolNames.length) continue
-      const names = uniqueNames([...poolNames, ...wheelNames])
+      const names = uniqueNames([...poolNames, ...safeWheelNames]).filter(name => !contentFilterError([name]))
       const pool = names.map(name => ({ id: `legacy:${name}`, name, art: artForName(name) }))
       if (pool.length < 2) pool.push(...state.scenes[scene.id].pool.filter(f => !names.includes(f.name)))
-      const wheel = wheelNames.length >= 2 ? wheelNames.slice(0, 10).map(n => `legacy:${n}`) : pool.slice(0, 8).map(f => f.id)
+      const wheel = safeWheelNames.length >= 2 ? safeWheelNames.slice(0, 10).map(n => `legacy:${n}`) : pool.slice(0, 8).map(f => f.id)
       state.scenes[scene.id] = { pool, wheel }; migrated = true
     }
     return { state, notice: migrated ? '已导入旧版食物库，原始数据也保留着' : saved ? '已保留异常缓存，并恢复可用的默认食物库' : undefined }

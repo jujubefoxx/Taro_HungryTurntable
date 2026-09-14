@@ -7,9 +7,9 @@ export interface CanvasNode {
   createImage?: () => HTMLImageElement
   toDataURL?: (type?: string) => string
 }
-export async function canvasSnapshot(node: CanvasNode): Promise<string> {
+export async function canvasSnapshot(node: CanvasNode, output?: { width: number; height: number }): Promise<string> {
   if (process.env.TARO_ENV === 'h5' && node.toDataURL) return node.toDataURL('image/png')
-  const result = await Taro.canvasToTempFilePath({ canvas: node as unknown as Taro.Canvas, fileType: 'png' })
+  const result = await Taro.canvasToTempFilePath({ canvas: node as unknown as Taro.Canvas, fileType: 'png', ...(output ? { destWidth: output.width, destHeight: output.height } : {}) })
   return result.tempFilePath
 }
 export interface Surface { node: CanvasNode; context: CanvasRenderingContext2D; size: number }

@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import { Canvas, Image, Text, View } from '@tarojs/components'
 import { Button } from '../../components/Button'
 import Taro, { useDidHide, useRouter } from '@tarojs/taro'
-import { Food, sample, SceneId, displayArt } from '../../core/model'
+import { Food, SceneId, displayArt } from '../../core/model'
 import { drawMealFrame, foodPresentation } from '../../core/food-presentation'
 import { useApp } from '../../state/store'
 import { Action, FoodImage, Icon, Page, Sheet } from '../../components/ui'
 import { asset, back, createBiteAudio, toast, vibrate } from '../../platform'
 import { canvasImage, canvasSurface, Surface } from '../../platform/canvas'
 import { InlineAd, SupportEntry } from '../../components/Monetization'
+import { pickSurpriseFood, SURPRISE_MAX_WAIT_MS, SURPRISE_REVEAL_MS } from '../../core/playful'
 
 const TOTAL = 6
 const pickerArtOffset: Partial<Record<Food['art'], number>> = {
@@ -28,6 +29,10 @@ export default function Cyber() {
   const [bites, setBites] = useState(0)
   const [chewing, setChewing] = useState(false)
   const [choosing, setChoosing] = useState(false)
+  const [surprise, setSurprise] = useState<'closed' | 'opening'>()
+  const surpriseLock = useRef(false)
+  const revealTimer = useRef<ReturnType<typeof setTimeout>>()
+  const revealFallback = useRef<ReturnType<typeof setTimeout>>()
   const lastBite = useRef(0)
   const biteRef = useRef(0)
   const motionTimer = useRef<ReturnType<typeof setTimeout>>()
@@ -40,13 +45,23 @@ export default function Cyber() {
   const [drawingFailed, setDrawingFailed] = useState(false)
   const [drawingReady, setDrawingReady] = useState(false)
   const [renderKey, setRenderKey] = useState(0)
+  const clearRevealTimers = () => { clearTimeout(revealTimer.current); clearTimeout(revealFallback.current) }
+  const finishSurprise = () => { clearRevealTimers(); surpriseLock.current = false; setSurprise(undefined) }
   useEffect(() => {
     audio.current = createBiteAudio(soundKind, () => { if (!audioWarned.current) { toast('音效暂时无法播放，可以继续体验'); audioWarned.current = true } })
     return () => audio.current?.destroy()
   }, [soundKind])
   useEffect(() => { if (!state.settings.sound) audio.current?.stop() }, [state.settings.sound])
-  useEffect(() => () => clearTimeout(motionTimer.current), [])
-  useDidHide(() => { audio.current?.stop(); clearTimeout(motionTimer.current); setChewing(false) })
+  useEffect(() => () => { clearTimeout(motionTimer.current); clearRevealTimers() }, [])
+  useDidHide(() => { audio.current?.stop(); clearTimeout(motionTimer.current); setChewing(false); finishSurprise() })
+  useEffect(() => {
+    if (!surprise) return
+    if (state.settings.reducedMotion) { finishSurprise(); return }
+    if (surprise === 'closed' && (drawingReady || drawingFailed)) {
+      setSurprise('opening')
+      revealTimer.current = setTimeout(finishSurprise, SURPRISE_REVEAL_MS)
+    }
+  }, [surprise, drawingReady, drawingFailed, state.settings.reducedMotion])
   useEffect(() => {
     let cancelled = false
     let request = 0
@@ -90,13 +105,24 @@ export default function Cyber() {
     return () => clearTimeout(timer)
   }, [art, bites, renderKey, drawingReady, state.settings.reducedMotion])
   const eat = () => {
-    if ((!drawingReady && !drawingFailed) || biteRef.current >= TOTAL || Date.now() - lastBite.current < 460) return
+    if (surpriseLock.current || (!drawingReady && !drawingFailed) || biteRef.current >= TOTAL || Date.now() - lastBite.current < 460) return
     lastBite.current = Date.now(); biteRef.current += 1; setBites(biteRef.current)
     if (state.settings.sound) audio.current?.play()
     vibrate(state.settings.haptics)
     if (!state.settings.reducedMotion) { setChewing(true); clearTimeout(motionTimer.current); motionTimer.current = setTimeout(() => setChewing(false), 220) }
   }
-  const reset = (next: Food) => { audio.current?.stop(); setFood(next); biteRef.current = 0; painter.current = undefined; lastBite.current = 0; setDrawingReady(false); setRenderKey(key => key + 1); setBites(0); setChewing(false); setChoosing(false); setDrawingFailed(false) }
+  const reset = (next: Food) => { finishSurprise(); clearTimeout(motionTimer.current); audio.current?.stop(); setFood(next); biteRef.current = 0; painter.current = undefined; lastBite.current = 0; setDrawingReady(false); setRenderKey(key => key + 1); setBites(0); setChewing(false); setChoosing(false); setDrawingFailed(false) }
+  const openSurprise = () => {
+    if (surpriseLock.current) return
+    const next = pickSurpriseFood(pool, food.id)
+    if (!next) return toast('先放入一份食物，再来揭晓吧')
+    reset(next)
+    if (state.settings.reducedMotion) return
+    surpriseLock.current = true
+    setSurprise('closed')
+    // 图片慢或加载失败时也不能一直盖住餐盘；返回页面、手动换餐都会取消计时。
+    revealFallback.current = setTimeout(finishSurprise, SURPRISE_MAX_WAIT_MS)
+  }
   useEffect(() => {
     const selected = pool.find(f => f.id === routeFoodId)
     if (selected) reset(selected)
@@ -105,23 +131,24 @@ export default function Cyber() {
   // 微信 Canvas 在隐藏状态下初始化后可能有像素却不显示；始终保留可见节点，加载提示由上层兜底图承接。
   return <Page title='赛博食堂'>
     <View className='cyber-heading'><Text className='page-title'>赛博食堂</Text><Button className='sound-pill' onClick={() => update(s => ({ ...s, settings: { ...s.settings, sound: !s.settings.sound } }))}><Icon name={state.settings.sound ? 'volume' : 'volume-off'} size={19} /><Text>音效{state.settings.sound ? '开' : '关'}</Text></Button></View>
-    <Text className='cyber-subtitle'>{finished ? '尝完啦！要不要换个口味？' : presentation.drink ? '来，先喝一口。' : '点一下，云吃一口。'}</Text>
+    <Text className='cyber-subtitle'>{surprise ? '端好啦，看看这次是什么。' : finished ? '尝完啦！要不要换个口味？' : presentation.drink ? '来，先喝一口。' : '点一下，云吃一口。'}</Text>
     <View className={`cyber-plate ${presentation.container ? 'has-container' : ''} ${chewing ? 'chewing' : ''}`}>
-      <View className='cyber-canvas' onClick={eat} ariaLabel={`${presentation.drink ? '喝' : '吃'}一口${food.name}`}><Canvas type='2d' id='cyber-food' canvasId='cyber-food' className='cyber-drawing' onError={() => setDrawingFailed(true)} /></View>
-      {(!drawingReady || drawingFailed) && (!finished || presentation.container) && <Button className='cyber-fallback' onClick={eat} disabled={!drawingReady && !drawingFailed}>{finished && presentation.emptyAsset ? <Image className='food-image' src={asset(presentation.emptyAsset)} mode='aspectFit' /> : <FoodImage food={food} />}<Text>{drawingFailed ? `已尝 ${bites} 口 · 动画加载失败` : '正在端上桌…'}</Text></Button>}
+      <View className='cyber-canvas' onClick={eat} ariaLabel={surprise ? '正在揭晓这一份' : `${presentation.drink ? '喝' : '吃'}一口${food.name}`}><Canvas type='2d' id='cyber-food' canvasId='cyber-food' className='cyber-drawing' onError={() => setDrawingFailed(true)} /></View>
+      {(!drawingReady || drawingFailed) && (!finished || presentation.container) && <Button className='cyber-fallback' onClick={eat} disabled={!!surprise || (!drawingReady && !drawingFailed)}>{finished && presentation.emptyAsset ? <Image className='food-image' src={asset(presentation.emptyAsset)} mode='aspectFit' /> : <FoodImage food={food} />}<Text>{drawingFailed ? `已尝 ${bites} 口 · 动画加载失败` : '正在端上桌…'}</Text></Button>}
       {finished && !presentation.container && <View className='cyber-done'><FoodImage food={{ name: '开饭小饭团', art: 'mascot' }} /><Text>好家伙，一口没剩。</Text></View>}
       {chewing && <Text className='bite-word'>{soundKind === 'sip' ? '咕噜！' : soundKind === 'spoon' ? '吸溜～' : '咔嚓！'}</Text>}
+      {surprise && <View className={`surprise-cover ${surprise === 'opening' ? 'surprise-opening' : ''}`} ariaLabel='食堂盲盒正在揭晓'><View className='surprise-cloche'><View className='surprise-knob' /><View className='surprise-dome'><Text>这次吃点啥？</Text><Text className='surprise-question'>?</Text></View></View><View className='surprise-tray' /></View>}
     </View>
-    <Text className='cyber-food-name'>{food.name}</Text>
+    <Text className='cyber-food-name'>{surprise ? '一份小惊喜，马上揭晓' : food.name}</Text>
     {finished && <Text className='cyber-tip'>{presentation.drink ? '见底了，再来一杯？' : `这份「${food.name}」，云吃完了。`}</Text>}
     <View className='bite-progress'><Text>已{presentation.drink ? '喝' : '吃'} {bites} 口 · 还剩 {TOTAL - bites} 口</Text><View className='progress-dots'>{Array.from({ length: TOTAL }, (_, i) => <View key={i} className={`progress-dot ${i < bites ? 'filled' : ''}`} />)}</View></View>
-    <Action onClick={finished ? () => reset(food) : eat} disabled={!drawingReady && !drawingFailed} className='spin-cta'>{finished ? '没过瘾，再来一份' : soundKind === 'sip' ? '咕噜，喝一口！' : '啊呜，吃一口！'}</Action>
-    <View className='home-links'><Button className="link-button" onClick={() => setChoosing(true)}><Icon name='refresh' /><Text>{presentation.drink ? '换一杯' : '换一个'}</Text></Button><Button className="link-button" onClick={back}><Icon name='arrow-back-up' /><Text>返回</Text></Button></View>
+    <Action onClick={finished ? () => reset(food) : eat} disabled={!!surprise || (!drawingReady && !drawingFailed)} className='spin-cta'>{surprise ? '揭盖中，马上好…' : finished ? '没过瘾，再来一份' : soundKind === 'sip' ? '咕噜，喝一口！' : '啊呜，吃一口！'}</Action>
+    <View className='home-links'><Button className="link-button" disabled={!!surprise} onClick={() => setChoosing(true)}><Icon name='refresh' /><Text>{presentation.drink ? '换一杯' : '换一个'}</Text></Button><Button className="link-button" onClick={back}><Icon name='arrow-back-up' /><Text>返回</Text></Button></View>
     <View className='cyber-disclaimer'><Icon name='heart' size={18} /><Text>仅供娱乐，不能代替真实饮食。饿了就好好吃饭。</Text></View>
     {finished && <><SupportEntry /><InlineAd /></>}
     {choosing && <Sheet title='下一口，尝点什么？' onClose={() => setChoosing(false)}><View className='food-picker'>{pool.map(f => {
       const offset = pickerArtOffset[displayArt(f)] || 0
       return <Button key={f.id} onClick={() => reset(f)}><View className='food-picker-art'><FoodImage food={f} style={offset ? { transform: `translateY(${Taro.pxTransform(offset)})` } : undefined} /></View><Text className='food-picker-label'>{f.name}</Text></Button>
-    })}</View><Action secondary onClick={() => reset(sample(pool.filter(f => f.id !== food.id).length ? pool.filter(f => f.id !== food.id) : pool, 1)[0])}>随便来一个</Action></Sheet>}
+    })}</View><Action secondary onClick={openSurprise}>随便来一个，揭个盲盒</Action></Sheet>}
   </Page>
 }

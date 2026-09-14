@@ -8,6 +8,7 @@ import { Action, FoodDetail, FoodImage, Icon, IconButton, NutritionLine, Page, S
 import { FoodForm } from '../../components/FoodForm'
 import { asset, back, confirm, toast } from '../../platform'
 import { InlineAd } from '../../components/Monetization'
+import { contentFilterError } from '../../core/content-filter'
 
 export default function Library() {
   const { state, update } = useApp()
@@ -42,12 +43,16 @@ export default function Library() {
     toast('已从当前分类移除')
   }
   const importFoods = () => {
+    const rawFilterError = contentFilterError([text])
+    if (rawFilterError) return toast(rawFilterError)
     if (!parsed.names.length) return toast('先填上想吃的食物名称')
     if (parsed.invalid.length) return toast('有名称超过 20 字，请修改后再导入')
     const fresh = parsed.names.filter(n => !current.pool.some(f => nameKey(f.name) === nameKey(n))).map(makeFood)
     if (!fresh.length) return toast('这些食物已经在库里啦')
     const capacity = foodCapacityError(current.pool.length, fresh.length)
     if (capacity) return toast(`${capacity}，本次未添加`)
+    const filterError = contentFilterError(fresh.map(food => food.name))
+    if (filterError) return toast(filterError)
     update(s => ({ ...s, scenes: { ...s.scenes, [scene]: { ...current, pool: [...current.pool, ...fresh] } } }))
     setText(''); setBulk(false); toast(`新增 ${fresh.length} 份食物，重复项已跳过`)
   }
@@ -65,6 +70,6 @@ export default function Library() {
     {form && <FoodForm food={form === 'new' ? undefined : form} onClose={() => setForm(undefined)} onSave={save} />}
     {menu && <Sheet title={menu.name} onClose={() => setMenu(undefined)}><View className='menu-actions'><Action secondary onClick={() => addToWheel(menu)}>{current.wheel.includes(menu.id) ? '已经在转盘里' : '放到转盘'}</Action><Action secondary onClick={() => { setForm(menu); setMenu(undefined) }}>编辑名称与营养</Action><Action secondary onClick={() => remove(menu)}>从当前分类移除</Action></View></Sheet>}
     {detail && <FoodDetail food={detail} onClose={() => setDetail(undefined)}><Action onClick={() => { addToWheel(detail); setDetail(undefined) }}>放到转盘</Action></FoodDetail>}
-    {bulk && <Sheet title='想吃的，一起加上' onClose={() => setBulk(false)}><Text className='muted'>空格、换行、逗号、分号都可以分隔；每个名称最多 20 字。</Text><Textarea className='bulk-input' ariaLabel='批量食物名称' placeholder={'火锅 寿司\n楼下阿姨家的炒粉\n黑糖珍珠牛奶'} value={text} maxlength={6000} onInput={e => setText(e.detail.value)} /><Text className='fine-print'>识别 {parsed.names.length} 个名称 · 输入中重复 {parsed.duplicates} 个</Text>{parsed.invalid.length > 0 && <Text className='error'>名称过长：{parsed.invalid.join('、')}</Text>}<Action onClick={importFoods}>添加到当前食物库</Action></Sheet>}
+    {bulk && <Sheet title='想吃的，一起加上' onClose={() => setBulk(false)}><Text className='muted'>空格、换行、逗号、分号都可以分隔；每个名称最多 20 字。违法违规、联系方式和引流内容无法保存。</Text><Textarea className='bulk-input' ariaLabel='批量食物名称' placeholder={'火锅 寿司\n楼下阿姨家的炒粉\n黑糖珍珠牛奶'} value={text} maxlength={6000} onInput={e => setText(e.detail.value)} /><Text className='fine-print'>识别 {parsed.names.length} 个名称 · 输入中重复 {parsed.duplicates} 个</Text>{parsed.invalid.length > 0 && <Text className='error'>名称过长：{parsed.invalid.join('、')}</Text>}<Action onClick={importFoods}>添加到当前食物库</Action></Sheet>}
   </Page>
 }

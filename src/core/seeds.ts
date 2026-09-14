@@ -30,7 +30,7 @@ export function initialState(): AppState {
   return {
     version: 2, scene: 'all',
     scenes: Object.fromEntries(SCENES.map(s => [s.id, defaultScene(s.id)])) as AppState['scenes'],
-    settings: { nutrition: false, sound: true, haptics: false, reducedMotion: false },
+    settings: { nutrition: false, sound: true, haptics: false, reducedMotion: false, avoidRecentOptIn: false },
     mealHistory: [],
     decisionWheels: [{ id: 'weekend', title: '周末去哪撒欢？', options: ['公园晒太阳', '逛一家小书店', '看场电影', '在家快乐躺平'] }],
     activeDecision: 'weekend'

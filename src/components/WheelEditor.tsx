@@ -7,6 +7,7 @@ import { useApp } from '../state/store'
 import { Action, FoodImage, IconButton, Sheet } from './ui'
 import { toast } from '../platform'
 import { FoodForm } from './FoodForm'
+import { contentFilterError } from '../core/content-filter'
 
 export function WheelEditor({ onClose }: { onClose: () => void }) {
   const { state, update } = useApp()
@@ -21,6 +22,8 @@ export function WheelEditor({ onClose }: { onClose: () => void }) {
     if (ids.length === 10) return setError('最多放 10 个，先移除一个再加吧')
     const invalid = nameError(newName)
     if (invalid) return setError(invalid)
+    const filterError = contentFilterError([newName])
+    if (filterError) return setError(filterError)
     const existing = pool.find(f => nameKey(f.name) === nameKey(newName))
     if (existing && ids.includes(existing.id)) return setError('这个已经在转盘里了')
     if (!existing) { setEditingFood(makeFood(newName)); return }
@@ -50,6 +53,8 @@ export function WheelEditor({ onClose }: { onClose: () => void }) {
         if (invalid) return setError(invalid)
       }
     }
+    const filterError = contentFilterError(normalized.flatMap(food => [food.name, food.nutrition?.serving || '']))
+    if (filterError) return setError(filterError)
     update(s => ({ ...s, scenes: { ...s.scenes, [scene]: { pool: normalized, wheel: ids } } }))
     onClose(); toast('这一桌，安排好了')
   }
@@ -63,7 +68,7 @@ export function WheelEditor({ onClose }: { onClose: () => void }) {
     setError('')
   }} />
   return <Sheet title='编辑这一轮' onClose={onClose}>
-    <Text className='muted'>2～10 个选项，机会均等。保存后才会更新转盘。</Text>
+    <Text className='muted'>2～10 个选项，机会均等。违法违规、联系方式和引流内容无法保存。</Text>
     <View className='editor-list'>{ids.map((id, index) => {
       const food = pool.find(f => f.id === id)!
       return <View className='editor-row' key={id}>

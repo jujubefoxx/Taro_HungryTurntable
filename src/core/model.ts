@@ -40,7 +40,7 @@ export function foodCapacityError(current: number, added: number) {
   return added > 0 && current + added > MAX_FOODS_PER_SCENE ? `每个分类最多 ${MAX_FOODS_PER_SCENE} 份食物，请先移除不需要的食物` : undefined
 }
 export interface SceneState { pool: Food[]; wheel: string[] }
-export interface Settings { nutrition: boolean; sound: boolean; haptics: boolean; reducedMotion: boolean }
+export interface Settings { nutrition: boolean; sound: boolean; haptics: boolean; reducedMotion: boolean; avoidRecentOptIn: boolean }
 export interface MealRecord {
   id: string
   date: string
@@ -88,8 +88,9 @@ export function sample<T>(items: readonly T[], count: number, random = Math.rand
   }
   return copy.slice(0, count)
 }
-export function chooseIndex(length: number, excluded?: number, random = Math.random) {
-  const choices = Array.from({ length }, (_, i) => i).filter(i => i !== excluded)
+export function chooseIndex(length: number, excluded?: number | readonly number[], random = Math.random) {
+  const excludedIndexes = new Set(typeof excluded === 'number' ? [excluded] : excluded || [])
+  const choices = Array.from({ length }, (_, i) => i).filter(i => !excludedIndexes.has(i))
   if (!choices.length) throw new Error('至少需要一个可选食物')
   return choices[Math.floor(random() * choices.length)]
 }

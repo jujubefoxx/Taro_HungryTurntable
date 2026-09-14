@@ -9,6 +9,7 @@ import { asset, confirm, go, toast } from '../../platform'
 import { InlineAd, RewardPurpose, RewardSheet, SupportEntry } from '../../components/Monetization'
 
 const preferences: { key: keyof Settings; title: string; desc: string; icon: string }[] = [
+  { key: 'avoidRecentOptIn', title: '最近吃过先跳过', desc: '默认关闭，随时可切换；开启后首页优先跳过最近 5 次确认选择', icon: 'history' },
   { key: 'nutrition', title: '显示营养参考', desc: '展示热量、份量和已有营养信息，仅供参考', icon: 'leaf' },
   { key: 'sound', title: '进食音效', desc: '赛博食堂的咔嚓、吸溜与咕噜声', icon: 'volume' },
   { key: 'haptics', title: '轻轻震一下', desc: '转盘结果与进食触感，需设备支持', icon: 'sparkles' },
@@ -18,7 +19,7 @@ export default function SettingsPage() {
   const { state, update } = useApp()
   const [reward, setReward] = useState<RewardPurpose>()
   return <Page title='设置'>
-    <View className='about-hero'><Image src={asset('mascot.png')} mode='aspectFit' /><Text className='page-title'>吃饭这件事，可别忘了。</Text><Text className='muted'>今天吃啥 · 2.0.7</Text></View>
+    <View className='about-hero'><Image src={asset('mascot.png')} mode='aspectFit' /><Text className='page-title'>吃饭这件事，可别忘了。</Text><Text className='muted'>今天吃啥 · 2.1.0</Text></View>
     <View className='settings-sections'>
       <View className='settings-list'>{preferences.map(item => <View key={item.key} className='setting-row'><Icon name={item.icon} /><View className='setting-copy'><Text>{item.title}</Text><Text className='fine-print'>{item.desc}</Text></View><Switch ariaLabel={item.title} color='#f5663d' checked={state.settings[item.key]} onChange={e => update(s => ({ ...s, settings: { ...s.settings, [item.key]: e.detail.value } }))} /></View>)}</View>
       <SupportEntry />
@@ -29,7 +30,7 @@ export default function SettingsPage() {
         <Button className='settings-secondary-link' onClick={() => setReward('feedback')}><Icon name='users' size={20} /><View><Text>反馈建议</Text><Text>看广告后反馈</Text></View></Button>
       </View>
     </View>
-    <View className='privacy-note'><Text className='section-title'>数据都存在哪？</Text><Text>食物、最近 30 条开饭记录、万事转盘和偏好保存在当前设备，不需要注册或登录。更换设备、清除应用数据或卸载后可能丢失。</Text></View>
+    <View className='privacy-note'><Text className='section-title'>数据都存在哪？</Text><Text>食物、最近 30 条开饭记录、万事转盘和偏好保存在当前设备，不需要注册或登录。更换设备、清除应用数据或卸载后可能丢失。</Text><Text>自定义文字在本机过滤和保存；违法违规、联系方式和引流内容无法保存。主动分享转盘时，候选名称和分类会随分享链接发给朋友，可被继续转发；开饭记录和偏好不会分享。</Text></View>
     <Text className='page-motto'>今天吃啥，不必想得那么复杂。</Text>
     <InlineAd video />
     {reward && <RewardSheet purpose={reward} onClose={() => setReward(undefined)} />}

@@ -5,6 +5,7 @@ import { Food, FoodArt, FOOD_ARTS, makeFood, nameError, normalizeName, artForNam
 import { Action, FoodImage, Sheet } from './ui'
 import { FormInput } from './FormInput'
 import { MACRO_FIELDS, nutritionDraft, nutritionDraftError, nutritionFromDraft } from '../core/nutrition-form'
+import { contentFilterError } from '../core/content-filter'
 
 export function FoodForm({ food, onClose, onSave }: { food?: Food; onClose: () => void; onSave: (food: Food) => string | undefined }) {
   const [name, setName] = useState(food?.name || '')
@@ -24,12 +25,14 @@ export function FoodForm({ food, onClose, onSave }: { food?: Food; onClose: () =
     const next: Food = { ...(food || makeFood(normalized)), name: normalized, art: art || artForName(normalized), artLocked }
     const changed = normalized !== food?.name || JSON.stringify(nutrition) !== JSON.stringify(initialNutrition)
     if (changed) { next.nutrition = nutritionFromDraft(nutrition, normalized === food?.name ? food?.nutrition : undefined); next.nutritionEdited = true }
+    const filterError = contentFilterError([next.name, next.nutrition?.serving || ''])
+    if (filterError) return setError(filterError)
     const err = onSave(next)
     if (err) return setError(err)
     onClose()
   }
   return <Sheet title={food ? '编辑这份食物' : '加一道好吃的'} onClose={onClose}>
-    <View className='field-heading'><Text className='field-label'>食物名称</Text><Text className={`name-counter ${nameLength >= 20 ? 'at-limit' : ''}`}>{nameLength} / 20</Text></View><FormInput ariaLabel='食物名称' placeholder='例如：楼下阿姨家的炒粉' value={name} maxlength={legacyLongName ? -1 : 20} onInput={e => { setName(e.detail.value); if (food) setNutrition(nutritionDraft()) }} /><Text className={`fine-print ${nameLength >= 20 ? 'at-limit' : ''}`}>{legacyLongName && nameLength > 20 ? '旧名称可以原样保留；改名请缩短到 20 字内。' : nameLength >= 20 ? '已经 20 字了，缩短一点就能继续写。' : '最多 20 个字符，汉字、数字和字母都算一个。'}</Text>
+    <View className='field-heading'><Text className='field-label'>食物名称</Text><Text className={`name-counter ${nameLength >= 20 ? 'at-limit' : ''}`}>{nameLength} / 20</Text></View><FormInput ariaLabel='食物名称' placeholder='例如：楼下阿姨家的炒粉' value={name} maxlength={legacyLongName ? -1 : 20} onInput={e => { setName(e.detail.value); if (food) setNutrition(nutritionDraft()) }} /><Text className={`fine-print ${nameLength >= 20 ? 'at-limit' : ''}`}>{legacyLongName && nameLength > 20 ? '旧名称可以原样保留；改名请缩短到 20 字内。' : nameLength >= 20 ? '已经 20 字了，缩短一点就能继续写。' : '最多 20 个字符；违法违规、联系方式和引流内容无法保存。'}</Text>
     <Text className='field-label'>挑一个图案</Text>
     <View className='art-picker'>{FOOD_ARTS.map(item => <Button key={item.id} className={`art-choice ${(art || artForName(name)) === item.id ? 'selected' : ''}`} ariaLabel={`选择图案：${item.name}`} onClick={() => { setArt(item.id); setArtLocked(true) }}><FoodImage food={{ name: item.name, art: item.id, artLocked: true }} /><Text>{item.name}</Text></Button>)}</View>
     <View className='form-nutrition'>

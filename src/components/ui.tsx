@@ -8,6 +8,7 @@ import { useApp } from '../state/store'
 import { calorieText } from '../core/nutrition'
 import { lockSheetBackground } from '../platform/scroll-lock'
 import { availableMacros } from '../core/nutrition-display'
+import { MascotGreeting } from './MascotGreeting'
 
 export function Icon({ name, size = 22 }: { name: string; size?: number }) {
   return <Image className='icon' src={asset(`icons/${name}.png`)} style={{ width: `${size}px`, height: `${size}px` }} mode='aspectFit' />
@@ -33,7 +34,7 @@ export function Page({ children, title, home = false }: PropsWithChildren<{ titl
   }, [])
   return <View className={`page ${state.settings.reducedMotion ? 'reduce-motion' : ''}`}>
     <View className='navigation-shell' style={{ paddingTop: `${nav.top}px`, paddingBottom: `${nav.gap}px` }}><View className='appbar' style={{ height: `${nav.height}px`, minHeight: `${nav.height}px`, paddingRight: `${nav.right}px`, marginBottom: 0 }}>
-      {home ? <View className='brand'><View className='brand-stamp'><Image className='brand-mark' src={asset('mascot.png')} mode='aspectFit' /></View><View className='brand-copy'><Text className='brand-title'>今天<Text className='brand-title-accent'>吃啥</Text></Text><Text className='brand-tagline'>专治“随便吃点”</Text></View></View> : <View className='bar-title'><IconButton name='chevron-left' label='返回' onClick={back} /><Text>{title}</Text></View>}
+      {home ? <View className='brand'><MascotGreeting reducedMotion={state.settings.reducedMotion} /><View className='brand-copy'><Text className='brand-title'>今天<Text className='brand-title-accent'>吃啥</Text></Text><Text className='brand-tagline'>专治“随便吃点”</Text></View></View> : <View className='bar-title'><IconButton name='chevron-left' label='返回' onClick={back} /><Text>{title}</Text></View>}
       {home && <IconButton name='settings' label='设置' onClick={() => go('settings')} />}
     </View></View>
     {storageNotice && <View className='notice'>{storageNotice}</View>}
