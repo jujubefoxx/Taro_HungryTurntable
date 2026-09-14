@@ -4,7 +4,7 @@ import { Button } from '../../components/Button'
 import Taro, { useDidHide, useDidShow, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { chooseIndex, Food, sample, SCENES, SceneId, targetRotation } from '../../core/model'
 import { useApp } from '../../state/store'
-import { Action, FoodDetail, Icon, Page, SceneTabs, Sheet } from '../../components/ui'
+import { Action, FoodDetail, FoodImage, Icon, Page, SceneTabs, Sheet } from '../../components/ui'
 import { Wheel } from '../../components/Wheel'
 import { WheelEditor } from '../../components/WheelEditor'
 import { asset, go, toast, vibrate } from '../../platform'
@@ -95,6 +95,7 @@ export default function Home() {
   const [result, setResult] = useState<Food>()
   const [detail, setDetail] = useState<Food>()
   const [editing, setEditing] = useState(false)
+  const [extrasOpen, setExtrasOpen] = useState(false)
   const [dailyPrompt, setDailyPrompt] = useState(false)
   const [dailyExclusions, setDailyExclusions] = useState(loadDailyExclusions)
   const [undo, setUndo] = useState<string[]>()
@@ -104,7 +105,7 @@ export default function Home() {
   const choices = mealChoices(foods, state.mealHistory, state.settings.avoidRecentOptIn, currentDailyExcludedIds)
   const share = createWheelShare(state.scene, foods.map(food => food.name))
   useShareAppMessage(() => ({
-    title: share.ok ? `这顿吃啥？${foods.length} 个选项，你来转` : '今天吃啥？转一下，今天就吃这个',
+    title: '今天吃啥？点开转一转就知道啦 🍙',
     path: share.ok ? share.path : '/pages/index/index', imageUrl: asset('share-card.png')
   }))
   useShareTimeline(() => ({ title: '今天吃啥？转一下，今天就吃这个', imageUrl: asset('mascot.png') }))
@@ -200,13 +201,20 @@ export default function Home() {
     {currentDailyExcludedFoods.length > 0 && <View className='daily-exclusions'><Text>今天先不吃：{currentDailyExcludedFoods.map(food => food.name).join('、')}</Text><Button className='text-button accent' disabled={spinning || undefined} onClick={clearDailyExclusions}>都放回来</Button></View>}
     <Action disabled={spinning || undefined} onClick={() => spin()} className='spin-cta'>{spinning ? '转着呢，马上好…' : '转一下，开饭！'}</Action>
     <View className='home-links'><Button className="link-button" disabled={spinning || undefined} onClick={() => setEditing(true)}><Icon name='pencil' /><Text>编辑转盘</Text></Button><Button className="link-button" disabled={spinning || undefined} onClick={() => go('library')}><Icon name='bowl-spoon' /><Text>我的食物库</Text></Button></View>
-    <ShareRound share={share} disabled={spinning} />
-    <Button className='cyber-banner' disabled={spinning || undefined} onClick={() => go('cyber')}><Icon name='sparkles' /><View><Text className='banner-title'>赛博食堂</Text><Text className='fine-print'>嘴馋了？先来这儿尝一口</Text></View><Icon name='chevron-right' size={18} /></Button>
-    <View className='extra-entries'><Button className='extra-entry' disabled={spinning} onClick={() => go('history')}><Icon name='history' /><Text>开饭小本本</Text><Text className='fine-print'>{state.mealHistory.length ? `记下了 ${state.mealHistory.length} 次开饭` : '看看之前选了啥'}</Text></Button><Button className='extra-entry' disabled={spinning} onClick={() => go('decide')}><Icon name='dice-5' /><Text>万事转盘</Text><Text className='fine-print'>去哪玩？做什么？都能转</Text></Button></View>
-    <View className='recent-choice-setting'><View className='setting-copy'><Text>最近吃过先跳过</Text><Text className='fine-print'>{!state.settings.avoidRecentOptIn ? '喜欢就常吃，想换换口味时再打开。' : choices.fallback ? '剩下的最近都选过，这轮先不避重。' : choices.skipped ? `本轮跳过 ${choices.skipped} 个最近选过的，还能选 ${choices.indexes.length} 个。` : '优先跳过最近 5 次确认选择，同名食物一起算。'}</Text></View><Switch ariaLabel='最近吃过先跳过' color='#f5663d' checked={state.settings.avoidRecentOptIn} disabled={spinning} onChange={e => update(s => ({ ...s, settings: { ...s.settings, avoidRecentOptIn: e.detail.value } }))} /></View>
-    {state.lastMeal && <Text className='last-meal'>上次翻牌：{state.lastMeal.name}</Text>}
+    <View className='home-play-entries'>
+      <Button className='home-play-entry' disabled={spinning} onClick={() => go('cyber')}><View className='home-play-heading'><View className='home-play-art'><FoodImage food={{ name: '披萨', art: 'pizza' }} /></View><View className='home-play-arrow'><Icon name='chevron-right' size={15} /></View></View><Text className='home-play-title'>赛博食堂</Text><Text className='fine-print'>点一点，云吃一口</Text></Button>
+      <Button className='home-play-entry' disabled={spinning} onClick={() => go('decide')}><View className='home-play-heading'><View className='home-play-art'><Icon name='dice-5' size={36} /></View><View className='home-play-arrow'><Icon name='chevron-right' size={15} /></View></View><Text className='home-play-title'>万事转盘</Text><Text className='fine-print'>去哪玩？做什么？</Text></Button>
+    </View>
+    <View className='home-tools'>
+      <Button className='home-history-entry' disabled={spinning} onClick={() => go('history')}><View className='home-history-icon'><Icon name='history' size={23} /></View><View className='home-history-copy'><Text className='home-history-title'>开饭小本本</Text><Text className='home-history-last'>{state.lastMeal ? `上次翻牌 · ${state.lastMeal.name}` : '记下每一顿的小满足'}</Text></View>{state.mealHistory.length > 0 && <Text className='home-history-count'>{state.mealHistory.length} 次开饭</Text>}<Icon name='chevron-right' size={17} /></Button>
+      <Button className='home-extras-toggle' ariaLabel={extrasOpen ? '收起分享与偏好' : '展开分享与偏好'} disabled={spinning} onClick={() => setExtrasOpen(open => !open)}><Icon name='settings' size={20} /><Text>分享与偏好</Text><Icon name={extrasOpen ? 'chevron-up' : 'chevron-down'} size={17} /></Button>
+      {extrasOpen && <View className='home-extras'>
+        <ShareRound share={share} disabled={spinning} />
+        <View className='recent-choice-setting'><View className='setting-copy'><Text>最近吃过先跳过</Text><Text className='fine-print'>{!state.settings.avoidRecentOptIn ? '喜欢就常吃，想换换口味时再打开。' : choices.fallback ? '剩下的最近都选过，这轮先不避重。' : choices.skipped ? `本轮跳过 ${choices.skipped} 个最近选过的，还能选 ${choices.indexes.length} 个。` : '优先跳过最近 5 次确认选择，同名食物一起算。'}</Text></View><Switch ariaLabel='最近吃过先跳过' color='#f5663d' checked={state.settings.avoidRecentOptIn} disabled={spinning} onChange={e => update(s => ({ ...s, settings: { ...s.settings, avoidRecentOptIn: e.detail.value } }))} /></View>
+        <SupportEntry />
+      </View>}
+    </View>
     <Text className='page-motto'>吃什么可以随便，吃饭可不能省略。</Text>
-    <SupportEntry />
     <InlineAd />
     {dailyPrompt && <Sheet title='今天想吃点啥？' onClose={() => setDailyPrompt(false)}>
       <View className='daily-greeting'><Image src={asset('mascot.png')} mode='aspectFit' /><View><Text className='daily-greeting-title'>{timeGreeting()}，见到你啦</Text><Text className='fine-print'>这个时间，推荐你试试「{recommendedScene.name}」。</Text></View></View>

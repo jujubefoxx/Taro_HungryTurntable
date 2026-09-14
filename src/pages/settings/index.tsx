@@ -30,7 +30,7 @@ export default function SettingsPage() {
         <Button className='settings-secondary-link' onClick={() => setReward('feedback')}><Icon name='users' size={20} /><View><Text>反馈建议</Text><Text>看广告后反馈</Text></View></Button>
       </View>
     </View>
-    <View className='privacy-note'><Text className='section-title'>数据都存在哪？</Text><Text>食物、最近 30 条开饭记录、万事转盘和偏好保存在当前设备，不需要注册或登录。更换设备、清除应用数据或卸载后可能丢失。</Text><Text>自定义文字在本机过滤和保存；违法违规、联系方式和引流内容无法保存。主动分享转盘时，候选名称和分类会随分享链接发给朋友，可被继续转发；开饭记录和偏好不会分享。</Text></View>
+    <View className='privacy-note'><Text className='section-title'>数据都存在哪？</Text><Text>数据保存在当前设备，更换设备或清除数据后可能丢失。</Text><Text>分享转盘不包含你的开饭记录和偏好。</Text></View>
     <Text className='page-motto'>今天吃啥，不必想得那么复杂。</Text>
     <InlineAd video />
     {reward && <RewardSheet purpose={reward} onClose={() => setReward(undefined)} />}

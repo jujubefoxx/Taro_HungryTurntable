@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Text, View } from '@tarojs/components'
 import Taro, { useDidHide, useRouter, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
 import { Action, FoodDetail, Icon, Page } from '../../components/ui'
-import { ShareRound } from '../../components/ShareRound'
 import { Wheel } from '../../components/Wheel'
 import { artForName, chooseIndex, Food, SCENES, targetRotation } from '../../core/model'
 import { readWheelShare } from '../../core/wheel-share'
@@ -31,7 +30,7 @@ export default function SharedRound() {
     return () => clearTimeout(timer.current)
   }, [token])
   useShareAppMessage(() => ({
-    title: share.ok ? `这顿吃啥？${foods.length} 个选项，你来转` : '今天吃啥？一起转一下',
+    title: '今天吃啥？点开转一转就知道啦 🍙',
     path: share.ok ? share.path : '/pages/index/index', imageUrl: asset('share-card.png')
   }))
   useShareTimeline(() => ({
@@ -57,8 +56,7 @@ export default function SharedRound() {
     <Wheel foods={foods} rotation={rotation} spinning={spinning} reducedMotion={state.settings.reducedMotion} onSpin={() => spin()} onFood={setDetail} />
     <View className='insight-chips shared-candidates'>{foods.map(food => <Text key={food.id}>{food.name}</Text>)}</View>
     <Action className='spin-cta' disabled={spinning} onClick={() => spin()}>{spinning ? '转着呢，马上好…' : '转一下，就在这轮选！'}</Action>
-    <ShareRound share={share} disabled={spinning} preview={false} />
-    <Action secondary onClick={home} disabled={spinning}>回到我的转盘</Action>
+    <Action secondary className='shared-home' onClick={home} disabled={spinning}>回到我的转盘</Action>
     <Text className='page-motto'>确认开饭才记进你的小本本，结果不会自动发给朋友。</Text>
     {detail && <FoodDetail food={detail} onClose={() => setDetail(undefined)} />}
     {result && <FoodDetail food={result} title='这一轮就选它？' onClose={() => setResult(undefined)}>

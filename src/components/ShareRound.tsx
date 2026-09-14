@@ -1,6 +1,7 @@
 import { Text, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { Button } from './Button'
+import { Icon } from './ui'
 import { WheelShare } from '../core/wheel-share'
 import { toast } from '../platform'
 import { copyShareLink } from '../platform/share-clipboard'
@@ -22,9 +23,9 @@ export function ShareRound({ share, disabled = false, preview = true }: { share:
   }
   return <View className='round-share'>
     <View className='round-share-actions'>
-      <Button className='text-button accent' disabled={disabled} openType={!h5 && share.ok ? 'share' : undefined} onClick={shareClick}>{h5 ? '复制这轮转盘链接' : '分享这轮转盘'}</Button>
-      {preview && <Button className='text-button' disabled={disabled} onClick={previewShare}>预览</Button>}
+      <Button className='round-share-button' disabled={disabled} openType={!h5 && share.ok ? 'share' : undefined} onClick={shareClick}><Icon name='users' size={20} /><Text>{h5 ? '复制这轮转盘链接' : '分享这轮转盘'}</Text></Button>
+      {preview && <Button className='round-share-preview' disabled={disabled} onClick={previewShare}>预览<Icon name='chevron-right' size={15} /></Button>}
     </View>
-    <Text className='fine-print'>只分享候选名称和分类，不含记录或个人偏好。</Text>
+    <Text className='fine-print'>朋友点开就能转，记录和偏好只留在你这里。</Text>
   </View>
 }

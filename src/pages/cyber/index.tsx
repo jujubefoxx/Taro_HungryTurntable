@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { Canvas, Image, Text, View } from '@tarojs/components'
 import { Button } from '../../components/Button'
-import Taro, { useDidHide, useRouter } from '@tarojs/taro'
+import Taro, { useDidHide, useReady, useRouter } from '@tarojs/taro'
 import { Food, SceneId, displayArt } from '../../core/model'
 import { drawMealFrame, foodPresentation } from '../../core/food-presentation'
 import { useApp } from '../../state/store'
 import { Action, FoodImage, Icon, Page, Sheet } from '../../components/ui'
 import { asset, back, createBiteAudio, toast, vibrate } from '../../platform'
-import { canvasImage, canvasSurface, Surface } from '../../platform/canvas'
+import { canvasImage, canvasSnapshot, canvasSurface, Surface } from '../../platform/canvas'
 import { InlineAd, SupportEntry } from '../../components/Monetization'
 import { pickSurpriseFood, SURPRISE_MAX_WAIT_MS, SURPRISE_REVEAL_MS } from '../../core/playful'
 
 const TOTAL = 6
+const SNAPSHOT_DISPLAY = process.env.TARO_ENV === 'weapp'
 const pickerArtOffset: Partial<Record<Food['art'], number>> = {
   burger: 7, chicken: 7, coffee: 7, tart: 7,
   matcha: 5, pizza: 5, shrimp: 5, vegetables: 5,
@@ -45,8 +46,20 @@ export default function Cyber() {
   const [drawingFailed, setDrawingFailed] = useState(false)
   const [drawingReady, setDrawingReady] = useState(false)
   const [renderKey, setRenderKey] = useState(0)
+  const [pageReady, setPageReady] = useState(false)
+  const [mealFrames, setMealFrames] = useState<string[]>([])
+  const framePaths = useRef<string[]>([])
+  const loadedFrames = useRef(new Set<string>())
+  // 每个页面实例使用独立画布 ID，与转盘和开饭小票保持一致。
+  const canvasId = useRef(`cyber-food-${Math.random().toString(36).slice(2, 10)}`).current
+  useReady(() => setPageReady(true))
   const clearRevealTimers = () => { clearTimeout(revealTimer.current); clearTimeout(revealFallback.current) }
   const finishSurprise = () => { clearRevealTimers(); surpriseLock.current = false; setSurprise(undefined) }
+  const frameLoaded = (path: string) => {
+    if (!framePaths.current.includes(path)) return
+    loadedFrames.current.add(path)
+    if (loadedFrames.current.size === framePaths.current.length) setDrawingReady(true)
+  }
   useEffect(() => {
     audio.current = createBiteAudio(soundKind, () => { if (!audioWarned.current) { toast('音效暂时无法播放，可以继续体验'); audioWarned.current = true } })
     return () => audio.current?.destroy()
@@ -63,29 +76,49 @@ export default function Cyber() {
     }
   }, [surprise, drawingReady, drawingFailed, state.settings.reducedMotion])
   useEffect(() => {
+    if (!pageReady) return
     let cancelled = false
     let request = 0
     const prepare = async () => {
+      if (cancelled) return
       const currentRequest = ++request
       setDrawingReady(false)
+      framePaths.current = []; loadedFrames.current.clear(); setMealFrames([])
       try {
-        const surface = await canvasSurface('cyber-food')
+        const surface = await canvasSurface(canvasId)
         const [full, empty] = await Promise.all([
           canvasImage(surface.node, asset(`${art}.png`)),
           presentation.emptyAsset ? canvasImage(surface.node, asset(presentation.emptyAsset)) : undefined
         ])
         if (cancelled || currentRequest !== request) return
+        if (SNAPSHOT_DISPLAY) {
+          // 微信原生 Canvas 的显示层会受来源页滚动位置影响；只离屏绘制，使用普通图片参与餐盘布局。
+          // 预先生成并加载每一口，进食时只切换可见帧，不再导出图片或替换图片地址。
+          const frames: string[] = []
+          for (let bite = 0; bite <= TOTAL; bite++) {
+            drawMealFrame(surface.context, full, empty, surface.size, bite / TOTAL, art)
+            const path = await canvasSnapshot(surface.node, { width: 512, height: 512 })
+            if (cancelled || currentRequest !== request) return
+            if (!path) throw new Error('食物图片未生成')
+            frames.push(path)
+          }
+          framePaths.current = frames
+          setDrawingFailed(false); setMealFrames(frames)
+          return
+        }
         const progress = biteRef.current / TOTAL
         drawMealFrame(surface.context, full, empty, surface.size, progress, art)
         painter.current = { surface, full, empty, art, revision: renderKey, progress }
         setDrawingFailed(false); setDrawingReady(true)
       } catch { if (!cancelled && currentRequest === request) setDrawingFailed(true) }
     }
-    const timer = setTimeout(prepare, 80)
+    // 等待本页原生节点就绪，再获取离屏画布或 H5 画布。
+    Taro.nextTick(prepare)
     Taro.onWindowResize(prepare)
-    return () => { cancelled = true; clearTimeout(timer); Taro.offWindowResize(prepare) }
-  }, [art, renderKey])
+    return () => { cancelled = true; framePaths.current = []; Taro.offWindowResize(prepare) }
+  }, [art, renderKey, canvasId, pageReady])
   useEffect(() => {
+    if (SNAPSHOT_DISPLAY) return
     const paint = painter.current
     if (!drawingReady || !paint || paint.art !== art || paint.revision !== renderKey) return
     const start = paint.progress, target = bites / TOTAL
@@ -111,7 +144,7 @@ export default function Cyber() {
     vibrate(state.settings.haptics)
     if (!state.settings.reducedMotion) { setChewing(true); clearTimeout(motionTimer.current); motionTimer.current = setTimeout(() => setChewing(false), 220) }
   }
-  const reset = (next: Food) => { finishSurprise(); clearTimeout(motionTimer.current); audio.current?.stop(); setFood(next); biteRef.current = 0; painter.current = undefined; lastBite.current = 0; setDrawingReady(false); setRenderKey(key => key + 1); setBites(0); setChewing(false); setChoosing(false); setDrawingFailed(false) }
+  const reset = (next: Food) => { finishSurprise(); clearTimeout(motionTimer.current); audio.current?.stop(); framePaths.current = []; loadedFrames.current.clear(); setMealFrames([]); setFood(next); biteRef.current = 0; painter.current = undefined; lastBite.current = 0; setDrawingReady(false); setRenderKey(key => key + 1); setBites(0); setChewing(false); setChoosing(false); setDrawingFailed(false) }
   const openSurprise = () => {
     if (surpriseLock.current) return
     const next = pickSurpriseFood(pool, food.id)
@@ -128,12 +161,14 @@ export default function Cyber() {
     if (selected) reset(selected)
   }, [routeFoodId])
   const finished = bites === TOTAL
-  // 微信 Canvas 在隐藏状态下初始化后可能有像素却不显示；始终保留可见节点，加载提示由上层兜底图承接。
   return <Page title='赛博食堂'>
+    {SNAPSHOT_DISPLAY && <Canvas type='2d' id={canvasId} canvasId={canvasId} className='render-canvas' onError={() => setDrawingFailed(true)} />}
     <View className='cyber-heading'><Text className='page-title'>赛博食堂</Text><Button className='sound-pill' onClick={() => update(s => ({ ...s, settings: { ...s.settings, sound: !s.settings.sound } }))}><Icon name={state.settings.sound ? 'volume' : 'volume-off'} size={19} /><Text>音效{state.settings.sound ? '开' : '关'}</Text></Button></View>
     <Text className='cyber-subtitle'>{surprise ? '端好啦，看看这次是什么。' : finished ? '尝完啦！要不要换个口味？' : presentation.drink ? '来，先喝一口。' : '点一下，云吃一口。'}</Text>
     <View className={`cyber-plate ${presentation.container ? 'has-container' : ''} ${chewing ? 'chewing' : ''}`}>
-      <View className='cyber-canvas' onClick={eat} ariaLabel={surprise ? '正在揭晓这一份' : `${presentation.drink ? '喝' : '吃'}一口${food.name}`}><Canvas type='2d' id='cyber-food' canvasId='cyber-food' className='cyber-drawing' onError={() => setDrawingFailed(true)} /></View>
+      <View className='cyber-canvas' onClick={eat} ariaLabel={surprise ? '正在揭晓这一份' : `${presentation.drink ? '喝' : '吃'}一口${food.name}`}>
+        {SNAPSHOT_DISPLAY ? mealFrames.map((path, index) => <Image key={path} src={path} mode='scaleToFill' className={`cyber-frame ${drawingReady && !drawingFailed && index === bites ? 'is-current' : ''}`} onLoad={() => frameLoaded(path)} onError={() => { if (framePaths.current.includes(path)) setDrawingFailed(true) }} />) : <Canvas type='2d' id={canvasId} canvasId={canvasId} className='cyber-drawing' onError={() => setDrawingFailed(true)} />}
+      </View>
       {(!drawingReady || drawingFailed) && (!finished || presentation.container) && <Button className='cyber-fallback' onClick={eat} disabled={!!surprise || (!drawingReady && !drawingFailed)}>{finished && presentation.emptyAsset ? <Image className='food-image' src={asset(presentation.emptyAsset)} mode='aspectFit' /> : <FoodImage food={food} />}<Text>{drawingFailed ? `已尝 ${bites} 口 · 动画加载失败` : '正在端上桌…'}</Text></Button>}
       {finished && !presentation.container && <View className='cyber-done'><FoodImage food={{ name: '开饭小饭团', art: 'mascot' }} /><Text>好家伙，一口没剩。</Text></View>}
       {chewing && <Text className='bite-word'>{soundKind === 'sip' ? '咕噜！' : soundKind === 'spoon' ? '吸溜～' : '咔嚓！'}</Text>}

@@ -32,7 +32,7 @@ export function Page({ children, title, home = false }: PropsWithChildren<{ titl
     Taro.onWindowResize(resize)
     return () => Taro.offWindowResize(resize)
   }, [])
-  return <View className={`page ${state.settings.reducedMotion ? 'reduce-motion' : ''}`}>
+  return <View className={`page ${home ? 'page-home' : ''} ${state.settings.reducedMotion ? 'reduce-motion' : ''}`}>
     <View className='navigation-shell' style={{ paddingTop: `${nav.top}px`, paddingBottom: `${nav.gap}px` }}><View className='appbar' style={{ height: `${nav.height}px`, minHeight: `${nav.height}px`, paddingRight: `${nav.right}px`, marginBottom: 0 }}>
       {home ? <View className='brand'><MascotGreeting reducedMotion={state.settings.reducedMotion} /><View className='brand-copy'><Text className='brand-title'>今天<Text className='brand-title-accent'>吃啥</Text></Text><Text className='brand-tagline'>专治“随便吃点”</Text></View></View> : <View className='bar-title'><IconButton name='chevron-left' label='返回' onClick={back} /><Text>{title}</Text></View>}
       {home && <IconButton name='settings' label='设置' onClick={() => go('settings')} />}
